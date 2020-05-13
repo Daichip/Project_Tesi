@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 
     //Viewer
     nvl::ViewerWindow viewer;
-    viewer.setWindowTitle("SkinMixer");
+    viewer.setWindowTitle("DemoTesi");
 
     //Show docks
     viewer.showLeftDock();
