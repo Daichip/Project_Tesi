@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "mitsuba_xml/xmlintegrator.h"
-#include "mitsuba_xml/xmlsensor.h"
-#include "mitsuba_xml/xmlshape.h"
+#include "mitsuba_xml/data_structures/xmlintegrator.h"
+#include "mitsuba_xml/data_structures/xmlsensor.h"
+#include "mitsuba_xml/data_structures/xmlshape.h"
 
 namespace ms{
 
@@ -15,9 +15,9 @@ class XMLScene
 public:
     XMLScene();
 
-    inline XMLIntegrator integrator() const { return mIntegrator; };
-    inline XMLSensor sensor() const { return mSensor; };
-    inline std::vector<XMLShape> shapes() const { return mShapes; } ;
+    inline XMLIntegrator& integrator() { return mIntegrator; };
+    inline XMLSensor& sensor() { return mSensor; };
+    inline std::vector<XMLShape>& shapes() { return mShapes; } ;
 
     inline void setIntegrator(const XMLIntegrator &integrator) { mIntegrator = integrator; } ;
     inline void setSensor(const XMLSensor &sensor) { mSensor = sensor; } ;

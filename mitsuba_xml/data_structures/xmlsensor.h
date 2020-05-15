@@ -20,15 +20,15 @@ public:
     inline float nearClipValue() const { return mNearClipValue; };
     inline float getFocusDistance() const { return mFocusDistance; };
     inline float getFov() const { return mFov; };
-    inline std::string getFovAxis() const { return mFovAxis; };
-    inline std::string filmName() const { return mFilmName; };
-    inline std::string filterName() const { return mFilterName; };
-    inline std::string samplerName() const { return mSamplerName; };
-    inline std::string sensorName() const { return mSensorName; };
-    inline std::string transformName() const { return mTransformName; };
-    inline Eigen::Vector3d transformOrigin() const { return mTransformOrigin; };
-    inline Eigen::Vector3d transformTarget() const { return mTransformTarget; };
-    inline Eigen::Vector3d transformUp() const { return mTransformUp; };
+    inline std::string& getFovAxis() { return mFovAxis; };
+    inline std::string& filmName() { return mFilmName; };
+    inline std::string& filterName() { return mFilterName; };
+    inline std::string& samplerName() { return mSamplerName; };
+    inline std::string& sensorName() { return mSensorName; };
+    inline std::string& transformName() { return mTransformName; };
+    inline Eigen::Vector3d& transformOrigin() { return mTransformOrigin; };
+    inline Eigen::Vector3d& transformTarget() { return mTransformTarget; };
+    inline Eigen::Vector3d& transformUp() { return mTransformUp; };
 
     inline void setFarClipValue(float farClipValue) { mFarClipValue = farClipValue; };
     inline void setFilmHeight(int filmHeight) { mFilmHeight = filmHeight; };

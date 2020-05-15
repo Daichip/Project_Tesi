@@ -12,7 +12,8 @@ public:
 
     // Methods
     inline void setType(std::string &newType) { mType = newType; }
-    std::string getType() { return mType; }
+
+    inline std::string& getType() { return mType; }
 
 private:
     // Attributes
