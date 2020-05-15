@@ -144,8 +144,12 @@ void Manager::updateView()
 
     bool drawableSelected = selectedMeshDrawer != nullptr;
 
-    ui->materialWoodRadio->setEnabled(drawableSelected);
-    ui->materialStoneRadio->setEnabled(drawableSelected);
+//    ui->materialWoodRadio->setEnabled(drawableSelected);
+//    ui->materialStoneRadio->setEnabled(drawableSelected);
+    ui->materialGoldRadio->setEnabled(drawableSelected);
+    ui->materialMirrorRadio->setEnabled(drawableSelected);
+    ui->materialPlasticRedRadio->setEnabled(drawableSelected);
+    ui->materialPlasticGreenRadio->setEnabled(drawableSelected);
 }
 
 void Manager::initialize()
@@ -173,7 +177,16 @@ void Manager::on_saveSceneButton_clicked()
         if (meshDrawer != nullptr) {
             Mesh meshCopy = *meshDrawer->mesh();
             nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
-            nvl::meshSaveToFile(std::to_string(i) + ".obj", meshCopy);
+            nvl::meshSaveToFile("SavedScene/" + std::to_string(i) + ".obj", meshCopy);
+
+            //************************************************************************************************************************************************
+            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
+//            std::cout << "Working with Mesh: " << ui->
+            //************************************************************************************************************************************************
         }
     }
+
+    QMessageBox successMsg;
+    successMsg.setText("Scene Saved!");
+    successMsg.exec();
 }

@@ -56,9 +56,19 @@ include($$NUVOLIB_PATH/nuvolib/nuvolib.pri)
 #Project files
 SOURCES += \
     main.cpp \
+    mitsuba_xml/meshmitsubaprops.cpp \
+    mitsuba_xml/xmlintegrator.cpp \
+    mitsuba_xml/xmlscene.cpp \
+    mitsuba_xml/xmlsensor.cpp \
+    mitsuba_xml/xmlshape.cpp \
     widgets/manager.cpp
 
 HEADERS += \
+    mitsuba_xml/meshmitsubaprops.h \
+    mitsuba_xml/xmlintegrator.h \
+    mitsuba_xml/xmlscene.h \
+    mitsuba_xml/xmlsensor.h \
+    mitsuba_xml/xmlshape.h \
     widgets/manager.h
 
 FORMS += \

@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <QWidget>
+#include <QMessageBox>
 
 #include <nvl/viewer/widgets/canvas.h>
 #include <nvl/viewer/widgets/drawable_list_widget.h>
