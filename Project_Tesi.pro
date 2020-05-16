@@ -53,7 +53,6 @@ FINAL_RELEASE {
 
 #Include nuvolib
 include($$NUVOLIB_PATH/nuvolib/nuvolib.pri)
-include($$TICPP_PATH)
 
 #Project files
 SOURCES += \
@@ -78,3 +77,8 @@ HEADERS += \
 FORMS += \
     widgets/manager.ui
 
+
+INCLUDEPATH += \
+               $$PWD/libs/ticpp
+
+LIBS += -L"$$PWD/libs/ticpp/lib" -lticpp

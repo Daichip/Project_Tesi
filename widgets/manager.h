@@ -13,6 +13,8 @@
 #include <nvl/models/model.h>
 #include <nvl/models/meshes.h>
 
+#include "mitsuba_xml/algorithms/scene_generator.h"
+
 namespace Ui {
 class Manager;
 }

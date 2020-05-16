@@ -186,6 +186,8 @@ void Manager::on_saveSceneButton_clicked()
         }
     }
 
+    ms::generateScene();
+
     QMessageBox successMsg;
     successMsg.setText("Scene Saved!");
     successMsg.exec();
