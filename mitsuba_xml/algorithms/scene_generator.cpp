@@ -104,28 +104,44 @@ void ms::generateScene()
     // BSDF - Rough Plastic - RGB
     TiXmlElement dBsdfRoughPlasticRgb("rgb");
     dBsdfRoughPlasticRgb.SetAttribute("name", "diffuse_reflectance");
-    dBsdfRoughPlasticRgb.SetAttribute("value", "0.75, 0.75, 0.75");
+    dBsdfRoughPlasticRgb.SetAttribute("value", "0.1, 0.1, 0.75");
 
     // Shapes
     TiXmlElement dShape("shape");
     dShape.SetAttribute("type", "sphere");
+
+    // Shape - Sphere Obj - Center
+    TiXmlElement dShapePoint("point");
+    dShapePoint.SetAttribute("name", "center");
+    dShapePoint.SetAttribute("x", "0");
+    dShapePoint.SetAttribute("y", "2");
+    dShapePoint.SetAttribute("z", "0");
 
     // Shape - BSDF Reference
     TiXmlElement dBsdfRef("ref");
     dBsdfRef.SetAttribute("name", "bsdf");
     dBsdfRef.SetAttribute("id", "bsdfroughplastic");
 
-    // Shape - Sphere Emitter
+    // Shape - Sphere Light
+    TiXmlElement dShapeEmit("shape");
+    dShapeEmit.SetAttribute("type", "sphere");
+
+    // Shape - Sphere Light - Center
+    TiXmlElement dShapeEPoint("point");
+    dShapeEPoint.SetAttribute("name", "center");
+    dShapeEPoint.SetAttribute("x", "0");
+    dShapeEPoint.SetAttribute("y", "7");
+    dShapeEPoint.SetAttribute("z", "0");
+
+    // Test - Sphere Light - Emitter
     TiXmlElement dEmitter("emitter");
     dEmitter.SetAttribute("type", "area");
 
+    // Test - Sphere Light - Emitter - Spectrum
     TiXmlElement dEmitterSpectrum("spectrum");
     dEmitterSpectrum.SetAttribute("name", "radiance");
     dEmitterSpectrum.SetAttribute("value", "1");
 
-    // Test - Sphere Emitter
-    TiXmlElement dShapeEmit("shape");
-    dShapeEmit.SetAttribute("type", "sphere");
 
 
     // Step 4: add all elements
@@ -154,13 +170,15 @@ void ms::generateScene()
     dSensor.InsertEndChild(dSensorFilm);
     dSensor.InsertEndChild(dSensorSampler);
 
-    dEmitter.InsertEndChild(dEmitterSpectrum);
 
+    dEmitter.InsertEndChild(dEmitterSpectrum);
+    dShapeEmit.InsertEndChild(dShapeEPoint);
     dShapeEmit.InsertEndChild(dEmitter);
 
+    dShape.InsertEndChild(dShapePoint);
+    dShape.InsertEndChild(dBsdfRef);
 
     dScene.InsertEndChild(dBsdfRoughPlastic);
-    dShape.InsertEndChild(dBsdfRef);
     dScene.InsertEndChild(dSensor);
     dScene.InsertEndChild(dIntegrator);
     dScene.InsertEndChild(dShapeEmit);
