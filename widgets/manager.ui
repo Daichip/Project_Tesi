@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>336</width>
-    <height>253</height>
+    <height>332</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,23 +20,6 @@
       <string>Material</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="2">
-       <widget class="QRadioButton" name="materialPlasticGreenRadio">
-        <property name="text">
-         <string>Plastic (green)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="materialGoldRadio">
-        <property name="text">
-         <string>Gold</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
        <widget class="QRadioButton" name="materialPlasticRedRadio">
         <property name="text">
@@ -51,6 +34,23 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="materialGoldRadio">
+        <property name="text">
+         <string>Gold</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QRadioButton" name="materialPlasticGreenRadio">
+        <property name="text">
+         <string>Plastic (green)</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -58,6 +58,13 @@
     <widget class="QPushButton" name="saveSceneButton">
      <property name="text">
       <string>Save scene</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="imageLabelViewer">
+     <property name="text">
+      <string>Render Goes Here</string>
      </property>
     </widget>
    </item>

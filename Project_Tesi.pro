@@ -27,7 +27,7 @@ macx{
 ######################### FLAGS AND OPTIMIZATION #######################
 
 TEMPLATE = app
-CONFIG += c++11
+CONFIG += c++17
 
 #Debug/release optimization flags
 CONFIG(debug, debug|release){
@@ -57,6 +57,7 @@ include($$NUVOLIB_PATH/nuvolib/nuvolib.pri)
 #Project files
 SOURCES += \
     main.cpp \
+    mitsuba_xml/algorithms/image_manipulation.cpp \
     mitsuba_xml/algorithms/scene_generator.cpp \
     mitsuba_xml/data_structures/meshmitsubaprops.cpp \
     mitsuba_xml/data_structures/xmlintegrator.cpp \
@@ -66,6 +67,7 @@ SOURCES += \
     widgets/manager.cpp
 
 HEADERS += \
+    mitsuba_xml/algorithms/image_manipulation.h \
     mitsuba_xml/algorithms/scene_generator.h \
     mitsuba_xml/data_structures/meshmitsubaprops.h \
     mitsuba_xml/data_structures/xmlintegrator.h \

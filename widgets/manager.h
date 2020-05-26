@@ -4,6 +4,10 @@
 #include <QFrame>
 #include <QWidget>
 #include <QMessageBox>
+#include <QImageReader>
+#include <QDebug>
+
+#include <cstdlib>
 
 #include <nvl/viewer/widgets/canvas.h>
 #include <nvl/viewer/widgets/drawable_list_widget.h>

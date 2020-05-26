@@ -191,4 +191,29 @@ void Manager::on_saveSceneButton_clicked()
     QMessageBox successMsg;
     successMsg.setText("Scene Saved!");
     successMsg.exec();
+
+//    std::system("source mitsuba2/setpath.sh && mitsuba /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
+
+    try {
+//        std::system("/home/dfara/mitsuba2/build/dist/mitsuba /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
+        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.xml");
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+
+    try {
+//        std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/immagine.png");
+         std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.png");
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+
+//    qDebug() << QImageReader::supportedImageFormats();
+
+    const QImage renderImage = QImage("SavedScene/Project_Tesi_Scene.png").scaled(480, 270);
+
+    ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
+
 }
