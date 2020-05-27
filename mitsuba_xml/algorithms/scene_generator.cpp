@@ -379,5 +379,5 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     doc.InsertEndChild(dScene);
 
     // Step 5: save the XML document
-    doc.SaveFile("SavedScene/Project_Tesi_Scene.xml");
+    doc.SaveFile("SavedScene/" + filename);
 }

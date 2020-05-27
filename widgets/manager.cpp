@@ -188,14 +188,9 @@ void Manager::on_saveSceneButton_clicked()
 
     ms::generateScene();
 
-    ms::XMLSensor sensor();
-    ms::XMLIntegrator integrator();
-    ms::XMLShape shape();
+    ms::XMLScene scene;
 
-    std::vector<ms::XMLShape> shapes;
-    shapes.push_back(shape);
-
-    ms::XMLScene scene();
+    ms::generateScene(scene, "Prova_dinamica.xml");
 
 
 
