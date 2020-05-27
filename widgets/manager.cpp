@@ -188,6 +188,17 @@ void Manager::on_saveSceneButton_clicked()
 
     ms::generateScene();
 
+    ms::XMLSensor sensor();
+    ms::XMLIntegrator integrator();
+    ms::XMLShape shape();
+
+    std::vector<ms::XMLShape> shapes;
+    shapes.push_back(shape);
+
+    ms::XMLScene scene();
+
+
+
     QMessageBox successMsg;
     successMsg.setText("Scene Saved!");
     successMsg.exec();

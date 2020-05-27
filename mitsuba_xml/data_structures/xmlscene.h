@@ -14,6 +14,8 @@ class XMLScene
 {
 public:
     XMLScene();
+    XMLScene(ms::XMLSensor& sensor, ms::XMLIntegrator& integrator, std::vector<ms::XMLShape>& shapes);
+
 
     inline XMLIntegrator& integrator() { return mIntegrator; };
     inline XMLSensor& sensor() { return mSensor; };

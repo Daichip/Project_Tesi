@@ -10,25 +10,28 @@ class XMLSensor
 {
 public:
     XMLSensor();
-    XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov, std::string &fovAxis, std::string &sensorName, std::string &transformName, Eigen::Vector3d &transformTarget, Eigen::Vector3d &transformOrigin, Eigen::Vector3d &transformUp,
-              std::string &samplerName, int sampleCount, std::string &filmName, int filmHeight, int filmWidth, std::string &filterName);
+    XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov,
+              std::string &fovAxis, std::string &sensorName, std::string &transformName,
+              Eigen::Vector3d &transformTarget, Eigen::Vector3d &transformOrigin, Eigen::Vector3d &transformUp,
+              std::string &samplerName, int sampleCount, std::string &filmName,
+              int filmHeight, int filmWidth, std::string &filterName);
 
-    inline int filmHeight() const { return mFilmHeight; };
-    inline int filmWidth() const { return mFilmWidth; };
-    inline int sampleCount() const { return mSampleCount; };
-    inline float farClipValue() const { return mFarClipValue; };
-    inline float nearClipValue() const { return mNearClipValue; };
+    inline int getFilmHeight() const { return mFilmHeight; };
+    inline int getFilmWidth() const { return mFilmWidth; };
+    inline int getSampleCount() const { return mSampleCount; };
+    inline float getFarClipValue() const { return mFarClipValue; };
+    inline float getNearClipValue() const { return mNearClipValue; };
     inline float getFocusDistance() const { return mFocusDistance; };
     inline float getFov() const { return mFov; };
     inline std::string& getFovAxis() { return mFovAxis; };
-    inline std::string& filmName() { return mFilmName; };
-    inline std::string& filterName() { return mFilterName; };
-    inline std::string& samplerName() { return mSamplerName; };
-    inline std::string& sensorName() { return mSensorName; };
-    inline std::string& transformName() { return mTransformName; };
-    inline Eigen::Vector3d& transformOrigin() { return mTransformOrigin; };
-    inline Eigen::Vector3d& transformTarget() { return mTransformTarget; };
-    inline Eigen::Vector3d& transformUp() { return mTransformUp; };
+    inline std::string& getFilmName() { return mFilmName; };
+    inline std::string& getFilterName() { return mFilterName; };
+    inline std::string& getSamplerName() { return mSamplerName; };
+    inline std::string& getSensorType() { return mSensorType; };
+    inline std::string& getTransformName() { return mTransformName; };
+    inline Eigen::Vector3d& getTransformOrigin() { return mTransformOrigin; };
+    inline Eigen::Vector3d& getTransformTarget() { return mTransformTarget; };
+    inline Eigen::Vector3d& getTransformUp() { return mTransformUp; };
 
     inline void setFarClipValue(float farClipValue) { mFarClipValue = farClipValue; };
     inline void setFilmHeight(int filmHeight) { mFilmHeight = filmHeight; };
@@ -41,7 +44,7 @@ public:
     inline void setNearClipValue(float nearClipValue) { mNearClipValue = nearClipValue; };
     inline void setSampleCount(int sampleCount) {mSampleCount = sampleCount;} ;
     inline void setSamplerName(const std::string &samplerName) { mSamplerName = samplerName; };
-    inline void setSensorName(const std::string &sensorName) { mSensorName = sensorName; };
+    inline void setSensorName(const std::string &sensorName) { mSensorType = sensorName; };
     inline void setTransformName(const std::string &transformName) { mTransformName = transformName; };
     inline void setTransformOrigin(const Eigen::Vector3d &transformOrigin) { mTransformOrigin = transformOrigin; };
     inline void setTransformTarget(const Eigen::Vector3d &transformTarget) { mTransformTarget = transformTarget; };
@@ -54,7 +57,7 @@ private:
     float mFocusDistance;
     float mFov;
     std::string mFovAxis;
-    std::string mSensorName;
+    std::string mSensorType;
     std::string mTransformName;
     Eigen::Vector3d mTransformTarget;
     Eigen::Vector3d mTransformOrigin;

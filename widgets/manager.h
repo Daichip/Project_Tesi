@@ -18,6 +18,11 @@
 #include <nvl/models/meshes.h>
 
 #include "mitsuba_xml/algorithms/scene_generator.h"
+#include "mitsuba_xml/data_structures/xmlscene.h"
+#include "mitsuba_xml/data_structures/xmlintegrator.h"
+#include "mitsuba_xml/data_structures/xmlsensor.h"
+#include "mitsuba_xml/data_structures/xmlshape.h"
+
 
 namespace Ui {
 class Manager;
