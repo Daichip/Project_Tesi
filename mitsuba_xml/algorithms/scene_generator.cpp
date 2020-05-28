@@ -1,5 +1,53 @@
 #include "mitsuba_xml/algorithms/scene_generator.h"
 
+//***********************************************************************************************
+void eigenMatToString(std::ostringstream& vts, Eigen::Vector3d& mat)
+{
+    std::vector<float> vec;
+    vec.push_back(mat[0]);
+    vec.push_back(mat[1]);
+    vec.push_back(mat[2]);
+
+
+    if (!vec.empty())
+      {
+        // Convert all but the last element to avoid a trailing ","
+        std::copy(vec.begin(), vec.end()-1,
+            std::ostream_iterator<float>(vts, ", "));
+
+        // Now add the last element with no delimiter
+        vts << vec.back();
+      }
+
+      std::cout << vts.str() << std::endl;
+}
+
+void arrayToString(std::ostringstream& vts, std::array<float, 3> arr)
+{
+    std::vector<float> vec;
+    vec.push_back(arr[0]);
+    vec.push_back(arr[1]);
+    vec.push_back(arr[2]);
+
+
+    if (!vec.empty())
+      {
+        // Convert all but the last element to avoid a trailing ","
+        std::copy(vec.begin(), vec.end()-1,
+            std::ostream_iterator<float>(vts, ", "));
+
+        // Now add the last element with no delimiter
+        vts << vec.back();
+      }
+
+      std::cout << vts.str() << std::endl;
+}
+
+
+
+
+//***********************************************************************************************
+
 void ms::generateScene()
 {
     // Step 0: create the new XML file
@@ -240,11 +288,15 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
 
     // Sensor - Transform - LookAt
     TiXmlElement dSensorTransformLA("lookat");
-    dSensorTransformLA.SetAttribute("target", "0, 2.75, -13.8");
-    dSensorTransformLA.SetAttribute("target", scene.sensor().getTransformTarget()[0]);
+    std::ostringstream vts;
+    eigenMatToString(vts, scene.sensor().getTransformTarget());
+    dSensorTransformLA.SetAttribute("target", vts.str());
 
-    dSensorTransformLA.SetAttribute("origin", "0, 2.75, -14.8");
-    dSensorTransformLA.SetAttribute("up", "0, 1, 0");
+    eigenMatToString(vts, scene.sensor().getTransformOrigin());
+    dSensorTransformLA.SetAttribute("origin", vts.str());
+
+    eigenMatToString(vts, scene.sensor().getTransformUp());
+    dSensorTransformLA.SetAttribute("up", vts.str());
 
     // Sensor - Sampler
     TiXmlElement dSensorSampler("sampler");
@@ -253,7 +305,7 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Sensor - Sampler - Sample Count
     TiXmlElement dSensorSamplerSC("integer");
     dSensorSamplerSC.SetAttribute("name", "sample_count");
-    dSensorSamplerSC.SetAttribute("value", "512");
+    dSensorSamplerSC.SetAttribute("value", scene.sensor().getSampleCount());
 
     // Sensor - Film
     TiXmlElement dSensorFilm("film");
@@ -262,41 +314,44 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Sensor - Film - Height
     TiXmlElement dSensorFilmH("integer");
     dSensorFilmH.SetAttribute("name", "height");
-    dSensorFilmH.SetAttribute("value", "1080");
+    dSensorFilmH.SetAttribute("value", scene.sensor().getFilmHeight());
 
     // Sensor - Film - Width
     TiXmlElement dSensorFilmW("integer");
     dSensorFilmW.SetAttribute("name", "width");
-    dSensorFilmW.SetAttribute("value", "1920");
+    dSensorFilmW.SetAttribute("value", scene.sensor().getFilmWidth());
 
     // Sensor - Film - Filter
     TiXmlElement dSensorFilmFilter("rfilter");
-    dSensorFilmFilter.SetAttribute("type", "gaussian");
+    dSensorFilmFilter.SetAttribute("type", scene.sensor().getFilterName());
+
     // Step 2: Add the shapes
+
     // Define the materials
     // BSDF - Rough Plastic
     TiXmlElement dBsdfRoughPlastic("bsdf");
-    dBsdfRoughPlastic.SetAttribute("type", "roughplastic");
-    dBsdfRoughPlastic.SetAttribute("id", "bsdfroughplastic");
+    dBsdfRoughPlastic.SetAttribute("type", scene.bsdf().getType());
+    dBsdfRoughPlastic.SetAttribute("id", scene.bsdf().getId());
 
     // BSDF - Rough Plastic - GGX Distribution
     TiXmlElement dBsdfRoughPlasticGGXDist("string");
     dBsdfRoughPlasticGGXDist.SetAttribute("name", "distribution");
-    dBsdfRoughPlasticGGXDist.SetAttribute("value", "ggx");
+    dBsdfRoughPlasticGGXDist.SetAttribute("value", scene.bsdf().getDistribution());
 
     // BSDF - Rough Plastic - Alpha
     TiXmlElement dBsdfRoughPlasticAlpha("float");
     dBsdfRoughPlasticAlpha.SetAttribute("name", "alpha");
-    dBsdfRoughPlasticAlpha.SetAttribute("value", "0.1");
+    dBsdfRoughPlasticAlpha.SetAttribute("value", scene.bsdf().getAlpha());
     // BSDF - Rough Plastic - Int IoR
     TiXmlElement dBsdfRoughPlasticIor("float");
     dBsdfRoughPlasticIor.SetAttribute("name", "int_ior");
-    dBsdfRoughPlasticIor.SetAttribute("value", "1.5");
+    dBsdfRoughPlasticIor.SetAttribute("value", scene.bsdf().getIntIor());
 
     // BSDF - Rough Plastic - RGB
     TiXmlElement dBsdfRoughPlasticRgb("rgb");
-    dBsdfRoughPlasticRgb.SetAttribute("name", "diffuse_reflectance");
-    dBsdfRoughPlasticRgb.SetAttribute("value", "0.1, 0.1, 0.75");
+    dBsdfRoughPlasticRgb.SetAttribute("name", scene.bsdf().getRGBName());
+    arrayToString(vts, scene.bsdf().getBsdfRGBValue());
+    dBsdfRoughPlasticRgb.SetAttribute("value", vts.str());
 
     // Shapes
     TiXmlElement dShape("shape");
@@ -381,3 +436,7 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Step 5: save the XML document
     doc.SaveFile("SavedScene/" + filename);
 }
+
+
+
+

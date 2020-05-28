@@ -201,16 +201,20 @@ void Manager::on_saveSceneButton_clicked()
 //    std::system("source mitsuba2/setpath.sh && mitsuba /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
 
     try {
-//        std::system("/home/dfara/mitsuba2/build/dist/mitsuba /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
+        // Static Scene
         std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.xml");
+        // Dynamic Scene
+        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Prova_dinamica.xml");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
     }
 
+
+    // Convert .EXR to .PNG
     try {
-//        std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/immagine.png");
-         std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.png");
+        std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.png");
+        std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Prova_dinamica.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Prova_dinamica.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';

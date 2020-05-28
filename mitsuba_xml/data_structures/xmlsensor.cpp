@@ -1,7 +1,7 @@
 #include "xmlsensor.h"
 
 ms::XMLSensor::XMLSensor():
-    mNearClipValue(0.1),
+    mNearClipValue(1.0),
     mFarClipValue(50.0),
     mFocusDistance(15.0),
     mFov(45.0),
