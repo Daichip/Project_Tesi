@@ -19,7 +19,7 @@ void eigenMatToString(std::ostringstream& vts, Eigen::Vector3d& mat)
         vts << vec.back();
       }
 
-      std::cout << vts.str() << std::endl;
+//      std::cout << vts.str() << std::endl;
 }
 
 void arrayToString(std::ostringstream& vts, std::array<float, 3> arr)
@@ -40,7 +40,7 @@ void arrayToString(std::ostringstream& vts, std::array<float, 3> arr)
         vts << vec.back();
       }
 
-      std::cout << vts.str() << std::endl;
+//      std::cout << vts.str() << std::endl;
 }
 
 
@@ -235,7 +235,16 @@ void ms::generateScene()
     doc.InsertEndChild(dScene);
 
     // Step 5: save the XML document
-    doc.SaveFile("SavedScene/Project_Tesi_Scene.xml");
+    try {
+        std::system("mkdir $HOME/SavedScene");
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+
+//    doc.SaveFile("$HOME/SavedScene/Project_Tesi_Scene.xml");
+
+    doc.SaveFile("/home/dfara/SavedScene/Project_Tesi_Scene.xml");
 }
 
 void ms::generateScene(ms::XMLScene& scene, std::string filename)
@@ -353,22 +362,6 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     arrayToString(vts, scene.bsdf().getBsdfRGBValue());
     dBsdfRoughPlasticRgb.SetAttribute("value", vts.str());
 
-    // Shapes
-    TiXmlElement dShape("shape");
-    dShape.SetAttribute("type", "sphere");
-
-    // Shape - Sphere Obj - Center
-    TiXmlElement dShapePoint("point");
-    dShapePoint.SetAttribute("name", "center");
-    dShapePoint.SetAttribute("x", "0");
-    dShapePoint.SetAttribute("y", "2");
-    dShapePoint.SetAttribute("z", "0");
-
-    // Shape - BSDF Reference
-    TiXmlElement dBsdfRef("ref");
-    dBsdfRef.SetAttribute("name", "bsdf");
-    dBsdfRef.SetAttribute("id", "bsdfroughplastic");
-
     // Shape - Sphere Light
     TiXmlElement dShapeEmit("shape");
     dShapeEmit.SetAttribute("type", "sphere");
@@ -388,6 +381,28 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     TiXmlElement dEmitterSpectrum("spectrum");
     dEmitterSpectrum.SetAttribute("name", "radiance");
     dEmitterSpectrum.SetAttribute("value", "1");
+
+    // Shapes
+//    for(ms::XMLShape& shape : scene.shapes())
+//    {
+
+//    }
+    TiXmlElement dShape("shape");
+    dShape.SetAttribute("type", "sphere");
+
+    // Shape - Sphere Obj - Center
+    TiXmlElement dShapePoint("point");
+    dShapePoint.SetAttribute("name", "center");
+    dShapePoint.SetAttribute("x", "0");
+    dShapePoint.SetAttribute("y", "2");
+    dShapePoint.SetAttribute("z", "0");
+
+    // Shape - BSDF Reference
+    TiXmlElement dBsdfRef("ref");
+    dBsdfRef.SetAttribute("name", "bsdf");
+    dBsdfRef.SetAttribute("id", "bsdfroughplastic");
+
+
 
 
 
@@ -434,7 +449,16 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     doc.InsertEndChild(dScene);
 
     // Step 5: save the XML document
-    doc.SaveFile("SavedScene/" + filename);
+    try {
+        std::system("mkdir $HOME/SavedScene");
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+//    doc.SaveFile("$HOME/SavedScene/" + filename);
+    doc.SaveFile("/home/dfara/SavedScene/" + filename);
+
+
 }
 
 

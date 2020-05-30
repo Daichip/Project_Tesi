@@ -181,7 +181,8 @@ void Manager::on_saveSceneButton_clicked()
 
             //************************************************************************************************************************************************
             std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
-//            std::cout << "Working with Mesh: " << ui->
+
+            std::cout << "Working with Mesh: " << meshDrawer->mesh() << std::endl;
             //************************************************************************************************************************************************
         }
     }
@@ -198,13 +199,13 @@ void Manager::on_saveSceneButton_clicked()
     successMsg.setText("Scene Saved!");
     successMsg.exec();
 
-//    std::system("source mitsuba2/setpath.sh && mitsuba /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
+//    std::system("source mitsuba2/setpath.sh && mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
 
     try {
         // Static Scene
-        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.xml");
+        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Project_Tesi_Scene.xml");
         // Dynamic Scene
-        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Prova_dinamica.xml");
+        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Prova_dinamica.xml");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
@@ -213,8 +214,8 @@ void Manager::on_saveSceneButton_clicked()
 
     // Convert .EXR to .PNG
     try {
-        std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Project_Tesi_Scene.png");
-        std::system("/home/dfara/exrtools-0.4/src/exrtopng /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Prova_dinamica.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/Prova_dinamica.png");
+        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Project_Tesi_Scene.exr $HOME//SavedScene/Project_Tesi_Scene.png");
+        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Prova_dinamica.exr $HOME/SavedScene/Prova_dinamica.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
@@ -222,7 +223,7 @@ void Manager::on_saveSceneButton_clicked()
 
 //    qDebug() << QImageReader::supportedImageFormats();
 
-    const QImage renderImage = QImage("SavedScene/Project_Tesi_Scene.png").scaled(480, 270);
+    const QImage renderImage = QImage("$HOME/SavedScene/Project_Tesi_Scene.png").scaled(480, 270);
 
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
 
