@@ -44,3 +44,9 @@ ms::XMLSensor::XMLSensor(float nearClipValue, float farClipValue, float focusDis
 {
 
 }
+
+
+ms::XMLSensor::~XMLSensor()
+{
+
+}

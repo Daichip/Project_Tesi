@@ -260,51 +260,51 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Step 2: set up the integrator and the sensor
     // Integrator
     TiXmlElement dIntegrator("integrator");
-    dIntegrator.SetAttribute("type", scene.integrator().getType());
+    dIntegrator.SetAttribute("type", scene.getIntegrator().getType());
 
     // Sensor
     TiXmlElement dSensor("sensor");
-    dSensor.SetAttribute("type", scene.sensor().getSensorType());
+    dSensor.SetAttribute("type", scene.getSensor().getSensorType());
 
     // Sensor - Far Clip
     TiXmlElement dSensorFarClip("float");
     dSensorFarClip.SetAttribute("name", "far_clip");
-    dSensorFarClip.SetAttribute("value", scene.sensor().getFarClipValue());
+    dSensorFarClip.SetAttribute("value", scene.getSensor().getFarClipValue());
 
     // Sensor - Near Clip
     TiXmlElement dSensorNearClip("float");
     dSensorNearClip.SetAttribute("name", "near_clip");
-    dSensorNearClip.SetAttribute("value", scene.sensor().getNearClipValue());
+    dSensorNearClip.SetAttribute("value", scene.getSensor().getNearClipValue());
 
     // Sensor - Focus Distance
     TiXmlElement dSensorFocusDistance("float");
     dSensorFocusDistance.SetAttribute("name", "focus_distance");
-    dSensorFocusDistance.SetAttribute("value", scene.sensor().getFocusDistance());
+    dSensorFocusDistance.SetAttribute("value", scene.getSensor().getFocusDistance());
 
     // Sensor - Fov
     TiXmlElement dSensorFov("float");
     dSensorFov.SetAttribute("name", "fov");
-    dSensorFov.SetAttribute("value", scene.sensor().getFov());
+    dSensorFov.SetAttribute("value", scene.getSensor().getFov());
 
     // Sensor - Fov Axis
     TiXmlElement dSensorFovAxis("string");
     dSensorFovAxis.SetAttribute("name", "fov_axis");
-    dSensorFovAxis.SetAttribute("value", scene.sensor().getFovAxis());
+    dSensorFovAxis.SetAttribute("value", scene.getSensor().getFovAxis());
 
     // Sensor - Transform
     TiXmlElement dSensorTransform("transform");
-    dSensorTransform.SetAttribute("name", scene.sensor().getTransformName());
+    dSensorTransform.SetAttribute("name", scene.getSensor().getTransformName());
 
     // Sensor - Transform - LookAt
     TiXmlElement dSensorTransformLA("lookat");
     std::ostringstream vts;
-    eigenMatToString(vts, scene.sensor().getTransformTarget());
+    eigenMatToString(vts, scene.getSensor().getTransformTarget());
     dSensorTransformLA.SetAttribute("target", vts.str());
 
-    eigenMatToString(vts, scene.sensor().getTransformOrigin());
+    eigenMatToString(vts, scene.getSensor().getTransformOrigin());
     dSensorTransformLA.SetAttribute("origin", vts.str());
 
-    eigenMatToString(vts, scene.sensor().getTransformUp());
+    eigenMatToString(vts, scene.getSensor().getTransformUp());
     dSensorTransformLA.SetAttribute("up", vts.str());
 
     // Sensor - Sampler
@@ -314,7 +314,7 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Sensor - Sampler - Sample Count
     TiXmlElement dSensorSamplerSC("integer");
     dSensorSamplerSC.SetAttribute("name", "sample_count");
-    dSensorSamplerSC.SetAttribute("value", scene.sensor().getSampleCount());
+    dSensorSamplerSC.SetAttribute("value", scene.getSensor().getSampleCount());
 
     // Sensor - Film
     TiXmlElement dSensorFilm("film");
@@ -323,44 +323,55 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Sensor - Film - Height
     TiXmlElement dSensorFilmH("integer");
     dSensorFilmH.SetAttribute("name", "height");
-    dSensorFilmH.SetAttribute("value", scene.sensor().getFilmHeight());
+    dSensorFilmH.SetAttribute("value", scene.getSensor().getFilmHeight());
 
     // Sensor - Film - Width
     TiXmlElement dSensorFilmW("integer");
     dSensorFilmW.SetAttribute("name", "width");
-    dSensorFilmW.SetAttribute("value", scene.sensor().getFilmWidth());
+    dSensorFilmW.SetAttribute("value", scene.getSensor().getFilmWidth());
 
     // Sensor - Film - Filter
     TiXmlElement dSensorFilmFilter("rfilter");
-    dSensorFilmFilter.SetAttribute("type", scene.sensor().getFilterName());
+    dSensorFilmFilter.SetAttribute("type", scene.getSensor().getFilterName());
 
     // Step 2: Add the shapes
 
     // Define the materials
     // BSDF - Rough Plastic
-    TiXmlElement dBsdfRoughPlastic("bsdf");
-    dBsdfRoughPlastic.SetAttribute("type", scene.bsdf().getType());
-    dBsdfRoughPlastic.SetAttribute("id", scene.bsdf().getId());
+    std::vector<TiXmlElement> xmlBsdfs;
+    for(XMLBsdf& bsdf : scene.getBsdfs())
+    {
+        TiXmlElement dBsdfRoughPlastic("bsdf");
+        dBsdfRoughPlastic.SetAttribute("type", bsdf.getType());
+        dBsdfRoughPlastic.SetAttribute("id", bsdf.getId());
 
-    // BSDF - Rough Plastic - GGX Distribution
-    TiXmlElement dBsdfRoughPlasticGGXDist("string");
-    dBsdfRoughPlasticGGXDist.SetAttribute("name", "distribution");
-    dBsdfRoughPlasticGGXDist.SetAttribute("value", scene.bsdf().getDistribution());
+        // BSDF - Rough Plastic - GGX Distribution
+        TiXmlElement dBsdfRoughPlasticGGXDist("string");
+        dBsdfRoughPlasticGGXDist.SetAttribute("name", "distribution");
+        dBsdfRoughPlasticGGXDist.SetAttribute("value", bsdf.getDistribution());
 
-    // BSDF - Rough Plastic - Alpha
-    TiXmlElement dBsdfRoughPlasticAlpha("float");
-    dBsdfRoughPlasticAlpha.SetAttribute("name", "alpha");
-    dBsdfRoughPlasticAlpha.SetAttribute("value", scene.bsdf().getAlpha());
-    // BSDF - Rough Plastic - Int IoR
-    TiXmlElement dBsdfRoughPlasticIor("float");
-    dBsdfRoughPlasticIor.SetAttribute("name", "int_ior");
-    dBsdfRoughPlasticIor.SetAttribute("value", scene.bsdf().getIntIor());
+        // BSDF - Rough Plastic - Alpha
+        TiXmlElement dBsdfRoughPlasticAlpha("float");
+        dBsdfRoughPlasticAlpha.SetAttribute("name", "alpha");
+        dBsdfRoughPlasticAlpha.SetAttribute("value", bsdf.getAlpha());
+        // BSDF - Rough Plastic - Int IoR
+        TiXmlElement dBsdfRoughPlasticIor("float");
+        dBsdfRoughPlasticIor.SetAttribute("name", "int_ior");
+        dBsdfRoughPlasticIor.SetAttribute("value", bsdf.getIntIor());
 
-    // BSDF - Rough Plastic - RGB
-    TiXmlElement dBsdfRoughPlasticRgb("rgb");
-    dBsdfRoughPlasticRgb.SetAttribute("name", scene.bsdf().getRGBName());
-    arrayToString(vts, scene.bsdf().getBsdfRGBValue());
-    dBsdfRoughPlasticRgb.SetAttribute("value", vts.str());
+        // BSDF - Rough Plastic - RGB
+        TiXmlElement dBsdfRoughPlasticRgb("rgb");
+        dBsdfRoughPlasticRgb.SetAttribute("name", bsdf.getRGBName());
+        arrayToString(vts, bsdf.getBsdfRGBValue());
+        dBsdfRoughPlasticRgb.SetAttribute("value", vts.str());
+
+        dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticGGXDist);
+        dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticAlpha);
+        dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
+        dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
+
+        xmlBsdfs.push_back(dBsdfRoughPlastic);
+    }
 
     // Shape - Sphere Light
     TiXmlElement dShapeEmit("shape");
@@ -418,10 +429,10 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     dSensorFilm.InsertEndChild(dSensorFilmW);
     dSensorFilm.InsertEndChild(dSensorFilmFilter);
 
-    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticGGXDist);
-    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticAlpha);
-    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
-    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
+//    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticGGXDist);
+//    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticAlpha);
+//    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
+//    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
 
     dSensor.InsertEndChild(dSensorFarClip);
     dSensor.InsertEndChild(dSensorNearClip);
@@ -440,7 +451,11 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     dShape.InsertEndChild(dShapePoint);
     dShape.InsertEndChild(dBsdfRef);
 
-    dScene.InsertEndChild(dBsdfRoughPlastic);
+//    dScene.InsertEndChild(dBsdfRoughPlastic);
+    for(TiXmlElement bsdfElem : xmlBsdfs)
+    {
+        dScene.InsertEndChild(bsdfElem);
+    }
     dScene.InsertEndChild(dSensor);
     dScene.InsertEndChild(dIntegrator);
     dScene.InsertEndChild(dShapeEmit);

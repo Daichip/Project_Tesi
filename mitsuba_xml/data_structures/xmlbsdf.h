@@ -11,18 +11,23 @@ class XMLBsdf
 public:
     XMLBsdf();
     XMLBsdf(float bsdfAlpha, float bsdfIntIor,
-            std::string bsdfDistribution, std::string bsdfId, std::string bsdfRGBName, std::string bsdfType, std::string bsdfTransformName,
-            std::array<float, 3> bsdfRGBValue, std::array<float, 3> bsdfTransformLAOrigin, std::array<float, 3> bsdfTransformLATarget,
-            std::array<float, 3> bsdfTransformLAUp, std::array<float, 3> bsdfTransformTranslate);
+            std::string& bsdfDistribution, std::string& bsdfId, std::string& bsdfRGBName, std::string& bsdfType, std::string& bsdfTransformName,
+            std::array<float, 3>& bsdfRGBValue, std::array<float, 3>& bsdfTransformLAOrigin, std::array<float, 3>& bsdfTransformLATarget,
+            std::array<float, 3>& bsdfTransformLAUp, std::array<float, 3>& bsdfTransformTranslate);
+
+    XMLBsdf(std::string& type);
+
+    ~XMLBsdf();
+
 
     // BSDF
     inline float getAlpha() const { return mBsdfAlpha; };
     inline float getIntIor() const { return mBsdfIntIor; };
-    inline std::string getDistribution() const { return mBsdfDistribution; };
-    inline std::string getId() const { return mBsdfId; };
-    inline std::string getRGBName() const { return mBsdfRGBName; };
-    inline std::string getType() const { return mBsdfType; };
-    inline std::array<float, 3> getBsdfRGBValue() const { return mBsdfRGBValue; };
+    inline std::string& getDistribution() { return mBsdfDistribution; };
+    inline std::string& getId() { return mBsdfId; };
+    inline std::string& getRGBName() { return mBsdfRGBName; };
+    inline std::string& getType() { return mBsdfType; };
+    inline std::array<float, 3>& getBsdfRGBValue() { return mBsdfRGBValue; };
     // BSDF Transform
     inline std::string getTransformName() const { return mBsdfTransformName; };
     inline std::array<float, 3>& getTransformLAOrigin() { return mBsdfTransformLAOrigin; };

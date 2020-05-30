@@ -10,6 +10,8 @@ class XMLIntegrator
 public:
     XMLIntegrator();
 
+    ~XMLIntegrator();
+
     // Methods
     inline void setType(std::string &newType) { mType = newType; }
 

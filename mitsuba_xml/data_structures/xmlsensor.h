@@ -16,6 +16,8 @@ public:
               std::string &samplerName, int sampleCount, std::string &filmName,
               int filmHeight, int filmWidth, std::string &filterName);
 
+    ~XMLSensor();
+
     inline int getFilmHeight() const { return mFilmHeight; };
     inline int getFilmWidth() const { return mFilmWidth; };
     inline int getSampleCount() const { return mSampleCount; };

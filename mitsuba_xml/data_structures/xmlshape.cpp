@@ -16,3 +16,8 @@ ms::XMLShape::XMLShape(std::string shapeName, ms::XMLBsdf& bsdf):
 
 }
 
+
+ms::XMLShape::~XMLShape()
+{
+
+}

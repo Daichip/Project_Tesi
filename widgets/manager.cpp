@@ -165,6 +165,7 @@ void Manager::connectSignals()
         connect(vCanvas, &nvl::Canvas::signal_movableFrameChanged, this, &Manager::slot_movableFrameChanged);
         connect(vCanvas, &nvl::Canvas::signal_canvasPicking, this, &Manager::slot_canvasPicking);
         connect(vCanvas, &nvl::Canvas::signal_drawableAdded, this, &Manager::slot_drawableAdded);
+//        connect(ui->materialGoldRadio, SIGNAL(ui->materialGoldRadio.clicked()), this, Manager::on_materialGoldRadio_clicked());
     }
 }
 
@@ -177,7 +178,7 @@ void Manager::on_saveSceneButton_clicked()
         if (meshDrawer != nullptr) {
             Mesh meshCopy = *meshDrawer->mesh();
             nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
-            nvl::meshSaveToFile("SavedScene/" + std::to_string(i) + ".obj", meshCopy);
+            nvl::meshSaveToFile("/home/dfara/SavedScene/" + std::to_string(i) + ".obj", meshCopy);
 
             //************************************************************************************************************************************************
             std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
@@ -214,7 +215,7 @@ void Manager::on_saveSceneButton_clicked()
 
     // Convert .EXR to .PNG
     try {
-        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Project_Tesi_Scene.exr $HOME//SavedScene/Project_Tesi_Scene.png");
+        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Project_Tesi_Scene.exr $HOME/SavedScene/Project_Tesi_Scene.png");
         std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Prova_dinamica.exr $HOME/SavedScene/Prova_dinamica.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
@@ -223,8 +224,13 @@ void Manager::on_saveSceneButton_clicked()
 
 //    qDebug() << QImageReader::supportedImageFormats();
 
-    const QImage renderImage = QImage("$HOME/SavedScene/Project_Tesi_Scene.png").scaled(480, 270);
+    const QImage renderImage = QImage("/home/dfara/SavedScene/Project_Tesi_Scene.png").scaled(480, 270);
 
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
 
+}
+
+void Manager::on_materialGoldRadio_clicked()
+{
+    std::cout << "Clicked GOLD button" << std::endl;
 }

@@ -20,9 +20,9 @@ ms::XMLBsdf::XMLBsdf():
 
 
 ms::XMLBsdf::XMLBsdf(float bsdfAlpha, float bsdfIntIor,
-                     std::string bsdfDistribution, std::string bsdfId, std::string bsdfRGBName, std::string bsdfType, std::string bsdfTransformName,
-                     std::array<float, 3> bsdfRGBValue, std::array<float, 3> bsdfTransformLAOrigin, std::array<float, 3> bsdfTransformLATarget,
-                     std::array<float, 3> bsdfTransformLAUp, std::array<float, 3> bsdfTransformTranslate):
+                     std::string& bsdfDistribution, std::string& bsdfId, std::string& bsdfRGBName, std::string& bsdfType, std::string& bsdfTransformName,
+                     std::array<float, 3>& bsdfRGBValue, std::array<float, 3>& bsdfTransformLAOrigin, std::array<float, 3>& bsdfTransformLATarget,
+                     std::array<float, 3>& bsdfTransformLAUp, std::array<float, 3>& bsdfTransformTranslate):
     mBsdfAlpha(bsdfAlpha),
     mBsdfIntIor(bsdfIntIor),
     mBsdfDistribution(bsdfDistribution),
@@ -35,6 +35,29 @@ ms::XMLBsdf::XMLBsdf(float bsdfAlpha, float bsdfIntIor,
     mBsdfTransformLATarget(bsdfTransformLATarget),
     mBsdfTransformLAUp(bsdfTransformLAUp),
     mBsdfTransformTranslate(bsdfTransformTranslate)
+{
+
+}
+
+
+ms::XMLBsdf::XMLBsdf(std::string& type)
+{
+    if(type == "gold")
+    {
+
+    }
+    else if(type == "mirror")
+    {
+
+    }
+    else if(type == "roughplastic")
+    {
+
+    }
+
+}
+
+ms::XMLBsdf::~XMLBsdf()
 {
 
 }

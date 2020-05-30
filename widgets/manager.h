@@ -62,6 +62,8 @@ private slots:
 
     void on_saveSceneButton_clicked();
 
+    void on_materialGoldRadio_clicked();
+
 private:
 
     MeshDrawer* getSelectedMeshDrawer();

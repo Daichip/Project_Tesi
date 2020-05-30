@@ -17,6 +17,8 @@ public:
     XMLShape();
     XMLShape(std::string shapeName, ms::XMLBsdf& bsdf );
 
+    ~XMLShape();
+
     // Getters
     inline std::string& getShapeName() { return mShapeName; };
     inline ms::XMLBsdf& getBsdf() { return mBsdf; };

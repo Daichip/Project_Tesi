@@ -15,18 +15,23 @@ class XMLScene
 {
 public:
     XMLScene();
-    XMLScene(ms::XMLSensor& sensor, ms::XMLIntegrator& integrator, std::vector<ms::XMLShape>& shapes);
+    XMLScene(ms::XMLSensor& sensor, ms::XMLIntegrator& integrator, std::vector<XMLBsdf>& bsdfs, std::vector<ms::XMLShape>& shapes);
+
+    ~XMLScene();
 
 
-    inline XMLIntegrator& integrator() { return mIntegrator; };
-    inline XMLSensor& sensor() { return mSensor; };
-    inline XMLBsdf& bsdf() { return mBsdf; } ;
-    inline std::vector<XMLShape>& shapes() { return mShapes; } ;
+    inline XMLIntegrator& getIntegrator() { return mIntegrator; };
+    inline XMLSensor& getSensor() { return mSensor; };
+    inline std::vector<XMLBsdf>& getBsdfs() { return mBsdfs; } ;
+    inline std::vector<XMLShape>& getShapes() { return mShapes; } ;
 
     inline void setIntegrator(const XMLIntegrator &integrator) { mIntegrator = integrator; } ;
     inline void setSensor(const XMLSensor &sensor) { mSensor = sensor; } ;
     inline void setShapes(const std::vector<XMLShape> &shapes) { mShapes = shapes; } ;
-    inline void setBsdf(const XMLBsdf &bsdf) { mBsdf = bsdf; };
+    inline void setBsdfs(const std::vector<XMLBsdf> &bsdfv) { mBsdfs = bsdfv; };
+    inline void addBsdf(XMLBsdf& bsdf) { mBsdfs.push_back(bsdf); };
+    inline void addShape(XMLShape& shape) { mShapes.push_back(shape); };
+
 
 
 private:
@@ -35,7 +40,7 @@ private:
 
     XMLIntegrator mIntegrator;
     XMLSensor mSensor;
-    XMLBsdf mBsdf;
+    std::vector<XMLBsdf> mBsdfs;
     std::vector<XMLShape> mShapes; // can have multiple shapes
 };
 
