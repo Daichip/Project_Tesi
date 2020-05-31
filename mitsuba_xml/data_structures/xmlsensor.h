@@ -2,7 +2,8 @@
 #define XMLSENSOR_H
 
 #include <string>
-#include "Eigen/Dense"
+#include <array>
+#include <iostream>
 
 namespace ms{
 
@@ -12,7 +13,7 @@ public:
     XMLSensor();
     XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov,
               std::string &fovAxis, std::string &sensorName, std::string &transformName,
-              Eigen::Vector3d &transformTarget, Eigen::Vector3d &transformOrigin, Eigen::Vector3d &transformUp,
+              std::array<float, 3> &transformTarget, std::array<float, 3> &transformOrigin, std::array<float, 3> &transformUp,
               std::string &samplerName, int sampleCount, std::string &filmName,
               int filmHeight, int filmWidth, std::string &filterName);
 
@@ -31,9 +32,9 @@ public:
     inline std::string& getSamplerName() { return mSamplerName; };
     inline std::string& getSensorType() { return mSensorType; };
     inline std::string& getTransformName() { return mTransformName; };
-    inline Eigen::Vector3d& getTransformOrigin() { return mTransformOrigin; };
-    inline Eigen::Vector3d& getTransformTarget() { return mTransformTarget; };
-    inline Eigen::Vector3d& getTransformUp() { return mTransformUp; };
+    inline std::array<float, 3>& getTransformOrigin() { return mTransformOrigin; };
+    inline std::array<float, 3>& getTransformTarget() { return mTransformTarget; };
+    inline std::array<float, 3>& getTransformUp() { return mTransformUp; };
 
     inline void setFarClipValue(float farClipValue) { mFarClipValue = farClipValue; };
     inline void setFilmHeight(int filmHeight) { mFilmHeight = filmHeight; };
@@ -48,9 +49,9 @@ public:
     inline void setSamplerName(const std::string &samplerName) { mSamplerName = samplerName; };
     inline void setSensorName(const std::string &sensorName) { mSensorType = sensorName; };
     inline void setTransformName(const std::string &transformName) { mTransformName = transformName; };
-    inline void setTransformOrigin(const Eigen::Vector3d &transformOrigin) { mTransformOrigin = transformOrigin; };
-    inline void setTransformTarget(const Eigen::Vector3d &transformTarget) { mTransformTarget = transformTarget; };
-    inline void setTransformUp(const Eigen::Vector3d &transformUp) { mTransformUp = transformUp; };
+    inline void setTransformOrigin(const std::array<float, 3> &transformOrigin) { mTransformOrigin = transformOrigin; };
+    inline void setTransformTarget(const std::array<float, 3> &transformTarget) { mTransformTarget = transformTarget; };
+    inline void setTransformUp(const std::array<float, 3> &transformUp) { mTransformUp = transformUp; };
 
 private:
     // Attributes
@@ -61,9 +62,9 @@ private:
     std::string mFovAxis;
     std::string mSensorType;
     std::string mTransformName;
-    Eigen::Vector3d mTransformTarget;
-    Eigen::Vector3d mTransformOrigin;
-    Eigen::Vector3d mTransformUp;
+    std::array<float, 3> mTransformTarget;
+    std::array<float, 3> mTransformOrigin;
+    std::array<float, 3> mTransformUp;
     std::string mSamplerName;
     int mSampleCount;
     std::string mFilmName;

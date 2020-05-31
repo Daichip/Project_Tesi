@@ -298,13 +298,15 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
     // Sensor - Transform - LookAt
     TiXmlElement dSensorTransformLA("lookat");
     std::ostringstream vts;
-    eigenMatToString(vts, scene.getSensor().getTransformTarget());
+    arrayToString(vts, scene.getSensor().getTransformTarget());
     dSensorTransformLA.SetAttribute("target", vts.str());
 
-    eigenMatToString(vts, scene.getSensor().getTransformOrigin());
+    vts = std::ostringstream();
+    arrayToString(vts, scene.getSensor().getTransformOrigin());
     dSensorTransformLA.SetAttribute("origin", vts.str());
 
-    eigenMatToString(vts, scene.getSensor().getTransformUp());
+    vts = std::ostringstream();
+    arrayToString(vts, scene.getSensor().getTransformUp());
     dSensorTransformLA.SetAttribute("up", vts.str());
 
     // Sensor - Sampler
@@ -476,7 +478,7 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
 
 }
 
-void generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
+void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
 {
     // Step 0: create the new XML file
     TiXmlDocument doc;
@@ -527,13 +529,15 @@ void generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     // Sensor - Transform - LookAt
     TiXmlElement dSensorTransformLA("lookat");
     std::ostringstream vts;
-    eigenMatToString(vts, scene.getSensor().getTransformTarget());
+    arrayToString(vts, scene.getSensor().getTransformTarget());
     dSensorTransformLA.SetAttribute("target", vts.str());
 
-    eigenMatToString(vts, scene.getSensor().getTransformOrigin());
+    vts = std::ostringstream();
+    arrayToString(vts, scene.getSensor().getTransformOrigin());
     dSensorTransformLA.SetAttribute("origin", vts.str());
 
-    eigenMatToString(vts, scene.getSensor().getTransformUp());
+    vts = std::ostringstream();
+    arrayToString(vts, scene.getSensor().getTransformUp());
     dSensorTransformLA.SetAttribute("up", vts.str());
 
     // Sensor - Sampler
@@ -584,6 +588,12 @@ void generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     dEmitterSpectrum.SetAttribute("name", "radiance");
     dEmitterSpectrum.SetAttribute("value", "100");
 
+    // Envmap
+    TiXmlElement dEnvmap("emitter");
+    TiXmlElement dEnvmapProps("string");
+    dEnvmapProps.SetAttribute("name", "filename");
+    dEnvmapProps.SetAttribute("value", "uffizi.exr");
+
     // Other Shapes
     std::vector<TiXmlElement> xmlShapes;
 
@@ -632,6 +642,7 @@ void generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
         dScene.InsertEndChild(dSensor);
         dScene.InsertEndChild(dIntegrator);
         dScene.InsertEndChild(dShapeEmit);
+        dScene.InsertEndChild(dEnvmap);
 //        dScene.InsertEndChild(dShape);
         for(TiXmlElement shape : xmlShapes)
         {

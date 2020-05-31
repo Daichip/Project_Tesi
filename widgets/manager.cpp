@@ -199,7 +199,7 @@ void Manager::on_saveSceneButton_clicked()
 
 //    std::map<int, ms::Mats> aaa;
 
-//    ms::generateScene(scene, matToMeshMap);
+    ms::generateScene(scene, matToMeshMap);
 
 
 
@@ -213,7 +213,7 @@ void Manager::on_saveSceneButton_clicked()
         // Static Scene
         std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Project_Tesi_Scene.xml");
         // Dynamic Scene
-        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Prova_dinamica.xml");
+        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/DynamicScene.xml");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
@@ -223,7 +223,7 @@ void Manager::on_saveSceneButton_clicked()
     // Convert .EXR to .PNG
     try {
         std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Project_Tesi_Scene.exr $HOME/SavedScene/Project_Tesi_Scene.png");
-        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Prova_dinamica.exr $HOME/SavedScene/Prova_dinamica.png");
+        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/DynamicScene.exr $HOME/SavedScene/DynamicScene.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
@@ -231,7 +231,7 @@ void Manager::on_saveSceneButton_clicked()
 
 //    qDebug() << QImageReader::supportedImageFormats();
 
-    const QImage renderImage = QImage("/home/dfara/SavedScene/Project_Tesi_Scene.png").scaled(480, 270);
+    const QImage renderImage = QImage("/home/dfara/SavedScene/DynamicScene.png").scaled(480, 270);
 
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
 

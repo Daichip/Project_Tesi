@@ -8,9 +8,9 @@ ms::XMLSensor::XMLSensor():
     mFovAxis("x"),
     mSensorType("perspective"),
     mTransformName("to_world"),
-    mTransformTarget(Eigen::Vector3d(0, 0, 0)),
-    mTransformOrigin(Eigen::Vector3d(0, 0, -25)),
-    mTransformUp(Eigen::Vector3d(0, 1, 0)),
+    mTransformTarget(std::array<float, 3> {0, 0, 0}),
+    mTransformOrigin(std::array<float, 3> {0, 0, -25}),
+    mTransformUp(std::array<float, 3> {0, 1, 0}),
     mSamplerName("independent"),
     mSampleCount(512),
     mFilmName("hdrfilm"),
@@ -18,12 +18,14 @@ ms::XMLSensor::XMLSensor():
     mFilmWidth(1920),
     mFilterName("gaussian")
 {
-
+    std::cout << "Target: " << getTransformTarget()[0] << ", " << getTransformTarget()[1] <<  ", " << getTransformTarget()[2] << std::endl;
+    std::cout << "Origin: " << getTransformOrigin()[0] << ", " << getTransformOrigin()[1] <<  ", " << getTransformOrigin()[2] << std::endl;
+    std::cout << "Up: " << getTransformUp()[0] << ", " << getTransformUp()[1] <<  ", " << getTransformUp()[2] << std::endl;
 }
 
 
 
-ms::XMLSensor::XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov, std::string &fovAxis, std::string &sensorName, std::string &transformName, Eigen::Vector3d &transformTarget, Eigen::Vector3d &transformOrigin, Eigen::Vector3d &transformUp,
+ms::XMLSensor::XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov, std::string &fovAxis, std::string &sensorName, std::string &transformName, std::array<float, 3> &transformTarget, std::array<float, 3> &transformOrigin, std::array<float, 3> &transformUp,
                          std::string &samplerName, int sampleCount, std::string &filmName, int filmHeight, int filmWidth, std::string &filterName):
     mNearClipValue(nearClipValue),
     mFarClipValue(farClipValue),

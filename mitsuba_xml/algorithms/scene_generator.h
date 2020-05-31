@@ -15,7 +15,6 @@ enum Mats { PGreen, PRed, Gold, Mirror };
 void generateScene();
 void generateScene(ms::XMLScene& scene, std::string filename="scene.xml");
 void generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map);
-//void generateScene(ms::XMLScene& scene, std::map<int, int>& map, std::string filename="scene.xml");
 
 TiXmlElement generateShape(int meshIndex, int matIndex);
 TiXmlElement generateBsdf(int matType);
