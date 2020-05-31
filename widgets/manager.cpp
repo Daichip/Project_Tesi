@@ -197,6 +197,10 @@ void Manager::on_saveSceneButton_clicked()
 
     ms::generateScene(scene, "Prova_dinamica.xml");
 
+//    std::map<int, ms::Mats> aaa;
+
+//    ms::generateScene(scene, matToMeshMap);
+
 
 
     QMessageBox successMsg;
@@ -236,34 +240,34 @@ void Manager::on_saveSceneButton_clicked()
 void Manager::on_materialGoldRadio_clicked()
 {
     std::cout << "Clicked GOLD button" << std::endl;
-    addToMap(Gold, findDrawableIndex());
+    addToMap(ms::Gold, findDrawableIndex());
 }
 
 void Manager::on_materialPlasticGreenRadio_clicked()
 {
     std::cout << "Clicked PLASTIC GREEN button" << std::endl;
 //    matToMeshMap.insert({selectedIndex, Manager::Mats::PGreen});
-    addToMap(PGreen, findDrawableIndex());
+    addToMap(ms::PGreen, findDrawableIndex());
 }
 
 void Manager::on_materialPlasticRedRadio_clicked()
 {
     std::cout << "Clicked PLASTIC RED button" << std::endl;
 //    matToMeshMap.insert({selectedIndex, Manager::Mats::PRed});
-    addToMap(PRed, findDrawableIndex());
+    addToMap(ms::PRed, findDrawableIndex());
 }
 
 void Manager::on_materialMirrorRadio_clicked()
 {
     std::cout << "Clicked MIRROR button" << std::endl;
 //    matToMeshMap.insert({selectedIndex, Manager::Mats::Mirror});
-    addToMap(Mirror, findDrawableIndex());
+    addToMap(ms::Mirror, findDrawableIndex());
 }
 
 
 
 
-void Manager::addToMap(Manager::Mats mat, int index)
+void Manager::addToMap(ms::Mats mat, int index)
 {
 
     // Look up if the mesh is present in the map [index]
@@ -298,7 +302,7 @@ int Manager::findDrawableIndex()
         if(vDrawableListWidget->isDrawableSelected(i))
         {
             selectedIndex = i;
-            std::cout << "Manager::findDrawableIndex - SIndex" << selectedIndex << std::endl;
+            std::cout << "Manager::findDrawableIndex - SIndex: " << selectedIndex << std::endl;
             break;
         }
     }

@@ -2,15 +2,15 @@
 
 ms::XMLSensor::XMLSensor():
     mNearClipValue(1.0),
-    mFarClipValue(50.0),
+    mFarClipValue(100.0),
     mFocusDistance(15.0),
     mFov(45.0),
     mFovAxis("x"),
     mSensorType("perspective"),
     mTransformName("to_world"),
     mTransformTarget(Eigen::Vector3d(0, 0, 0)),
-    mTransformOrigin(Eigen::Vector3d(0, 0, 0)),
-    mTransformUp(Eigen::Vector3d(0, 0, 0)),
+    mTransformOrigin(Eigen::Vector3d(0, 0, -25)),
+    mTransformUp(Eigen::Vector3d(0, 1, 0)),
     mSamplerName("independent"),
     mSampleCount(512),
     mFilmName("hdrfilm"),

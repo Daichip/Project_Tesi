@@ -476,7 +476,7 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
 
 }
 
-void generateScene(ms::XMLScene& scene, std::map<int, int>& map, std::string filename="scene.xml")
+void generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
 {
     // Step 0: create the new XML file
     TiXmlDocument doc;
@@ -587,7 +587,184 @@ void generateScene(ms::XMLScene& scene, std::map<int, int>& map, std::string fil
     // Other Shapes
     std::vector<TiXmlElement> xmlShapes;
 
+    // For each mesh in the map, we need to check its material and generate the correct XML
+    for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
+    {
+       xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
+    }
+
+    // Step 4: add all elements
+        doc.InsertEndChild(decl); // Add the declaration to the document
+
+
+        dSensorSampler.InsertEndChild(dSensorSamplerSC);
+
+        dSensorTransform.InsertEndChild(dSensorTransformLA);
+
+        dSensorFilm.InsertEndChild(dSensorFilmH);
+        dSensorFilm.InsertEndChild(dSensorFilmW);
+        dSensorFilm.InsertEndChild(dSensorFilmFilter);
+
+    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticGGXDist);
+    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticAlpha);
+    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
+    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
+
+        dSensor.InsertEndChild(dSensorFarClip);
+        dSensor.InsertEndChild(dSensorNearClip);
+        dSensor.InsertEndChild(dSensorFocusDistance);
+        dSensor.InsertEndChild(dSensorFov);
+        dSensor.InsertEndChild(dSensorFovAxis);
+        dSensor.InsertEndChild(dSensorTransform);
+        dSensor.InsertEndChild(dSensorFilm);
+        dSensor.InsertEndChild(dSensorSampler);
+
+
+        dEmitter.InsertEndChild(dEmitterSpectrum);
+        dShapeEmit.InsertEndChild(dShapeEPoint);
+        dShapeEmit.InsertEndChild(dEmitter);
+
+//        dShape.InsertEndChild(dShapePoint);
+//        dShape.InsertEndChild(dBsdfRef);
+
+    //    dScene.InsertEndChild(dBsdfRoughPlastic);
+
+        dScene.InsertEndChild(dSensor);
+        dScene.InsertEndChild(dIntegrator);
+        dScene.InsertEndChild(dShapeEmit);
+//        dScene.InsertEndChild(dShape);
+        for(TiXmlElement shape : xmlShapes)
+        {
+            dScene.InsertEndChild(shape);
+        }
+
+        doc.InsertEndChild(dScene);
+
+
+    // Step 5: save the XML document
+        try {
+            std::system("mkdir $HOME/SavedScene");
+        } catch(const std::system_error& e) {
+            std::cout << "Caught system_error with code " << e.code()
+                      << " meaning " << e.what() << '\n';
+        }
+    //    doc.SaveFile("$HOME/SavedScene/" + filename);
+        doc.SaveFile("/home/dfara/SavedScene/DynamicScene.xml");
 
 }
+
+
+
+
+TiXmlElement ms::generateShape(int meshIndex, int matIndex)
+{
+//    <shape type="obj" id="Mesh_3">
+//            <string name="filename" value="2.obj"/>
+//            <bsdf type="roughplastic">
+//                <string name="distribution" value="ggx"/>
+//                <float name="alpha" value="0.1"/>
+//                <float name="int_ior" value="1.49"/>
+//                <rgb name="diffuse_reflectance" value="0.1, 0.1, 0.75"/>
+//            </bsdf>
+//        </shape>
+
+
+    TiXmlElement dShape("shape");
+    dShape.SetAttribute("type", "obj");
+
+    TiXmlElement dFilename("string");
+    dFilename.SetAttribute("name", "filename");
+    dFilename.SetAttribute("value", std::to_string(meshIndex) + ".obj");
+    dShape.InsertEndChild(dFilename);
+
+    dShape.InsertEndChild(ms::generateBsdf(matIndex));
+
+    return dShape;
+}
+
+
+TiXmlElement ms::generateBsdf(int matType)
+{
+    TiXmlElement dBsdf("bsdf");
+    TiXmlElement dBsdfProps("string");
+
+    TiXmlElement dBsdfRoughPlasticAlpha("float");
+    TiXmlElement dBsdfRoughPlasticIor("float");
+    TiXmlElement dBsdfRoughPlasticRgb("rgb");
+
+    switch (matType) {
+
+        // Plastic Green
+        case 0:
+            dBsdf.SetAttribute("type", "roughplastic");
+            dBsdfProps.SetAttribute("name", "distribution");
+            dBsdfProps.SetAttribute("value", "ggx");
+
+            // BSDF - Rough Plastic - Alpha
+
+            dBsdfRoughPlasticAlpha.SetAttribute("name", "alpha");
+            dBsdfRoughPlasticAlpha.SetAttribute("value", "0.1");
+            // BSDF - Rough Plastic - Int IoR
+            dBsdfRoughPlasticIor.SetAttribute("name", "int_ior");
+            dBsdfRoughPlasticIor.SetAttribute("value", "1.5");
+
+            // BSDF - Rough Plastic - RGB
+            dBsdfRoughPlasticRgb.SetAttribute("name", "diffuse_reflectance");
+            dBsdfRoughPlasticRgb.SetAttribute("value", "0.1, 0.75, 0.1");
+
+            dBsdf.InsertEndChild(dBsdfProps);
+            dBsdf.InsertEndChild(dBsdfRoughPlasticAlpha);
+            dBsdf.InsertEndChild(dBsdfRoughPlasticIor);
+            dBsdf.InsertEndChild(dBsdfRoughPlasticRgb);
+            break;
+
+        // Plastic Red
+        case 1:
+            dBsdf.SetAttribute("type", "roughplastic");
+            dBsdfProps.SetAttribute("name", "distribution");
+            dBsdfProps.SetAttribute("value", "ggx");
+
+            // BSDF - Rough Plastic - Alpha
+            dBsdfRoughPlasticAlpha.SetAttribute("name", "alpha");
+            dBsdfRoughPlasticAlpha.SetAttribute("value", "0.1");
+            // BSDF - Rough Plastic - Int IoR
+            dBsdfRoughPlasticIor.SetAttribute("name", "int_ior");
+            dBsdfRoughPlasticIor.SetAttribute("value", "1.5");
+
+            // BSDF - Rough Plastic - RGB
+            dBsdfRoughPlasticRgb.SetAttribute("name", "diffuse_reflectance");
+            dBsdfRoughPlasticRgb.SetAttribute("value", "0.75, 0.1, 0.1");
+
+            dBsdf.InsertEndChild(dBsdfProps);
+            dBsdf.InsertEndChild(dBsdfRoughPlasticAlpha);
+            dBsdf.InsertEndChild(dBsdfRoughPlasticIor);
+            dBsdf.InsertEndChild(dBsdfRoughPlasticRgb);
+            break;
+
+        // Gold
+        case 2:
+            dBsdf.SetAttribute("type", "conductor");
+
+            dBsdfProps.SetAttribute("name", "material");
+            dBsdfProps.SetAttribute("value", "Au");
+
+            dBsdf.InsertEndChild(dBsdfProps);
+            break;
+
+        // Mirror
+        case 3:
+            dBsdf.SetAttribute("type", "conductor");
+
+            dBsdfProps.SetAttribute("name", "material");
+            dBsdfProps.SetAttribute("value", "none");
+
+            dBsdf.InsertEndChild(dBsdfProps);
+            break;
+    }
+
+    return dBsdf;
+
+}
+
 
 
