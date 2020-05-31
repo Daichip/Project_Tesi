@@ -476,6 +476,118 @@ void ms::generateScene(ms::XMLScene& scene, std::string filename)
 
 }
 
+void generateScene(ms::XMLScene& scene, std::map<int, int>& map, std::string filename="scene.xml")
+{
+    // Step 0: create the new XML file
+    TiXmlDocument doc;
+    TiXmlDeclaration decl( "1.0", "utf-8", "" ); // Create the declaration [XML Version and encoding]
 
+    // Step 1: create the scene
+    TiXmlElement dScene("scene");
+    dScene.SetAttribute("version", "2.0.0");
+
+    // Step 2: set up the integrator and the sensor
+    // Integrator
+    TiXmlElement dIntegrator("integrator");
+    dIntegrator.SetAttribute("type", scene.getIntegrator().getType());
+
+    // Sensor
+    TiXmlElement dSensor("sensor");
+    dSensor.SetAttribute("type", scene.getSensor().getSensorType());
+
+    // Sensor - Far Clip
+    TiXmlElement dSensorFarClip("float");
+    dSensorFarClip.SetAttribute("name", "far_clip");
+    dSensorFarClip.SetAttribute("value", scene.getSensor().getFarClipValue());
+
+    // Sensor - Near Clip
+    TiXmlElement dSensorNearClip("float");
+    dSensorNearClip.SetAttribute("name", "near_clip");
+    dSensorNearClip.SetAttribute("value", scene.getSensor().getNearClipValue());
+
+    // Sensor - Focus Distance
+    TiXmlElement dSensorFocusDistance("float");
+    dSensorFocusDistance.SetAttribute("name", "focus_distance");
+    dSensorFocusDistance.SetAttribute("value", scene.getSensor().getFocusDistance());
+
+    // Sensor - Fov
+    TiXmlElement dSensorFov("float");
+    dSensorFov.SetAttribute("name", "fov");
+    dSensorFov.SetAttribute("value", scene.getSensor().getFov());
+
+    // Sensor - Fov Axis
+    TiXmlElement dSensorFovAxis("string");
+    dSensorFovAxis.SetAttribute("name", "fov_axis");
+    dSensorFovAxis.SetAttribute("value", scene.getSensor().getFovAxis());
+
+    // Sensor - Transform
+    TiXmlElement dSensorTransform("transform");
+    dSensorTransform.SetAttribute("name", scene.getSensor().getTransformName());
+
+    // Sensor - Transform - LookAt
+    TiXmlElement dSensorTransformLA("lookat");
+    std::ostringstream vts;
+    eigenMatToString(vts, scene.getSensor().getTransformTarget());
+    dSensorTransformLA.SetAttribute("target", vts.str());
+
+    eigenMatToString(vts, scene.getSensor().getTransformOrigin());
+    dSensorTransformLA.SetAttribute("origin", vts.str());
+
+    eigenMatToString(vts, scene.getSensor().getTransformUp());
+    dSensorTransformLA.SetAttribute("up", vts.str());
+
+    // Sensor - Sampler
+    TiXmlElement dSensorSampler("sampler");
+    dSensorSampler.SetAttribute("type", "independent");
+
+    // Sensor - Sampler - Sample Count
+    TiXmlElement dSensorSamplerSC("integer");
+    dSensorSamplerSC.SetAttribute("name", "sample_count");
+    dSensorSamplerSC.SetAttribute("value", scene.getSensor().getSampleCount());
+
+    // Sensor - Film
+    TiXmlElement dSensorFilm("film");
+    dSensorFilm.SetAttribute("type", "hdrfilm");
+
+    // Sensor - Film - Height
+    TiXmlElement dSensorFilmH("integer");
+    dSensorFilmH.SetAttribute("name", "height");
+    dSensorFilmH.SetAttribute("value", scene.getSensor().getFilmHeight());
+
+    // Sensor - Film - Width
+    TiXmlElement dSensorFilmW("integer");
+    dSensorFilmW.SetAttribute("name", "width");
+    dSensorFilmW.SetAttribute("value", scene.getSensor().getFilmWidth());
+
+    // Sensor - Film - Filter
+    TiXmlElement dSensorFilmFilter("rfilter");
+    dSensorFilmFilter.SetAttribute("type", scene.getSensor().getFilterName());
+
+    // Step 2: Add the shapes
+    // Shape - Sphere Light
+    TiXmlElement dShapeEmit("shape");
+    dShapeEmit.SetAttribute("type", "sphere");
+
+    // Shape - Sphere Light - Center
+    TiXmlElement dShapeEPoint("point");
+    dShapeEPoint.SetAttribute("name", "center");
+    dShapeEPoint.SetAttribute("x", "0");
+    dShapeEPoint.SetAttribute("y", "7");
+    dShapeEPoint.SetAttribute("z", "0");
+
+    // Test - Sphere Light - Emitter
+    TiXmlElement dEmitter("emitter");
+    dEmitter.SetAttribute("type", "area");
+
+    // Test - Sphere Light - Emitter - Spectrum
+    TiXmlElement dEmitterSpectrum("spectrum");
+    dEmitterSpectrum.SetAttribute("name", "radiance");
+    dEmitterSpectrum.SetAttribute("value", "100");
+
+    // Other Shapes
+    std::vector<TiXmlElement> xmlShapes;
+
+
+}
 
 

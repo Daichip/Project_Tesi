@@ -165,7 +165,7 @@ void Manager::connectSignals()
         connect(vCanvas, &nvl::Canvas::signal_movableFrameChanged, this, &Manager::slot_movableFrameChanged);
         connect(vCanvas, &nvl::Canvas::signal_canvasPicking, this, &Manager::slot_canvasPicking);
         connect(vCanvas, &nvl::Canvas::signal_drawableAdded, this, &Manager::slot_drawableAdded);
-        connect(ui->materialGoldRadio, SIGNAL(clicked(true)), this, SLOT(on_materialGoldRadio_clicked()));
+        connect(ui->materialGoldRadio, SIGNAL(clicked()), this, SLOT(on_materialGoldRadio_clicked()));
         connect(ui->materialPlasticGreenRadio, SIGNAL(clicked()), this, SLOT(on_materialPlasticGreenRadio_clicked()));
         connect(ui->materialPlasticRedRadio, SIGNAL(clicked()), this, SLOT(on_materialPlasticRedRadio_clicked()));
         connect(ui->materialMirrorRadio, SIGNAL(clicked()), this, SLOT(on_materialMirrorRadio_clicked()));
@@ -236,23 +236,106 @@ void Manager::on_saveSceneButton_clicked()
 void Manager::on_materialGoldRadio_clicked()
 {
     std::cout << "Clicked GOLD button" << std::endl;
-    matToMeshMap.insert({"Gold", 0});
+    addToMap(Gold, findDrawableIndex());
 }
 
 void Manager::on_materialPlasticGreenRadio_clicked()
 {
     std::cout << "Clicked PLASTIC GREEN button" << std::endl;
-    matToMeshMap.insert({"PGreen", 0});
+//    matToMeshMap.insert({selectedIndex, Manager::Mats::PGreen});
+    addToMap(PGreen, findDrawableIndex());
 }
 
 void Manager::on_materialPlasticRedRadio_clicked()
 {
     std::cout << "Clicked PLASTIC RED button" << std::endl;
-    matToMeshMap.insert({"PRed", 0});
+//    matToMeshMap.insert({selectedIndex, Manager::Mats::PRed});
+    addToMap(PRed, findDrawableIndex());
 }
 
 void Manager::on_materialMirrorRadio_clicked()
 {
     std::cout << "Clicked MIRROR button" << std::endl;
-    matToMeshMap.insert({"Mirror", 0});
+//    matToMeshMap.insert({selectedIndex, Manager::Mats::Mirror});
+    addToMap(Mirror, findDrawableIndex());
 }
+
+
+
+
+void Manager::addToMap(Manager::Mats mat, int index)
+{
+
+    // Look up if the mesh is present in the map [index]
+    // If it is, then check if the mat is the same as the inserted one
+    // If it is, leave
+    // If it isn't update
+    // If the mesh is not present in the map, add it
+    if(matToMeshMap.find(index) != matToMeshMap.end())
+    {
+        if(matToMeshMap[index] != mat)
+        {
+            matToMeshMap[index] = mat;
+            std::cout << "Manager::addToMap - Updated: {" << index << ", " << mat << "}" << std::endl;
+        }
+    }
+    else
+    {
+        // Element is not yet present
+        std::cout << "Manager::addToMap - Added: {" << index << ", " << mat << "}" << std::endl;
+        matToMeshMap.insert({index, mat});
+    }
+}
+
+
+
+int Manager::findDrawableIndex()
+{
+    int selectedIndex = -1;
+
+    for(int i = 0; i < vCanvas->drawableNumber(); i++)
+    {
+        if(vDrawableListWidget->isDrawableSelected(i))
+        {
+            selectedIndex = i;
+            std::cout << "Manager::findDrawableIndex - SIndex" << selectedIndex << std::endl;
+            break;
+        }
+    }
+
+    return selectedIndex;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

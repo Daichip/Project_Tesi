@@ -39,6 +39,8 @@ class Manager : public QFrame
 
     typedef nvl::Canvas::PickingData PickingData;
 
+    enum Mats { PGreen, PRed, Gold, Mirror };
+
 public:
 
     explicit Manager(
@@ -70,6 +72,8 @@ private slots:
 
     void on_materialMirrorRadio_clicked();
 
+
+
 private:
 
     MeshDrawer* getSelectedMeshDrawer();
@@ -79,6 +83,10 @@ private:
     void initialize();
     void connectSignals();
 
+    // XML Methods
+    void addToMap(Mats mat, int index);
+    int findDrawableIndex();
+
     //Interface fields
     Ui::Manager *ui;
 
@@ -87,7 +95,7 @@ private:
     nvl::ModelLoaderWidget* vModelLoaderWidget;
 
     // XML
-    std::map<std::string, int> matToMeshMap;
+    std::map<int, Mats> matToMeshMap;
 
 };
 
