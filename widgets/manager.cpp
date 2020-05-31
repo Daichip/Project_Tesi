@@ -165,7 +165,10 @@ void Manager::connectSignals()
         connect(vCanvas, &nvl::Canvas::signal_movableFrameChanged, this, &Manager::slot_movableFrameChanged);
         connect(vCanvas, &nvl::Canvas::signal_canvasPicking, this, &Manager::slot_canvasPicking);
         connect(vCanvas, &nvl::Canvas::signal_drawableAdded, this, &Manager::slot_drawableAdded);
-//        connect(ui->materialGoldRadio, SIGNAL(ui->materialGoldRadio.clicked()), this, Manager::on_materialGoldRadio_clicked());
+        connect(ui->materialGoldRadio, SIGNAL(clicked(true)), this, SLOT(on_materialGoldRadio_clicked()));
+        connect(ui->materialPlasticGreenRadio, SIGNAL(clicked()), this, SLOT(on_materialPlasticGreenRadio_clicked()));
+        connect(ui->materialPlasticRedRadio, SIGNAL(clicked()), this, SLOT(on_materialPlasticRedRadio_clicked()));
+        connect(ui->materialMirrorRadio, SIGNAL(clicked()), this, SLOT(on_materialMirrorRadio_clicked()));
     }
 }
 
@@ -233,4 +236,23 @@ void Manager::on_saveSceneButton_clicked()
 void Manager::on_materialGoldRadio_clicked()
 {
     std::cout << "Clicked GOLD button" << std::endl;
+    matToMeshMap.insert({"Gold", 0});
+}
+
+void Manager::on_materialPlasticGreenRadio_clicked()
+{
+    std::cout << "Clicked PLASTIC GREEN button" << std::endl;
+    matToMeshMap.insert({"PGreen", 0});
+}
+
+void Manager::on_materialPlasticRedRadio_clicked()
+{
+    std::cout << "Clicked PLASTIC RED button" << std::endl;
+    matToMeshMap.insert({"PRed", 0});
+}
+
+void Manager::on_materialMirrorRadio_clicked()
+{
+    std::cout << "Clicked MIRROR button" << std::endl;
+    matToMeshMap.insert({"Mirror", 0});
 }

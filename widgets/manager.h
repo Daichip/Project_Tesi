@@ -64,6 +64,12 @@ private slots:
 
     void on_materialGoldRadio_clicked();
 
+    void on_materialPlasticGreenRadio_clicked();
+
+    void on_materialPlasticRedRadio_clicked();
+
+    void on_materialMirrorRadio_clicked();
+
 private:
 
     MeshDrawer* getSelectedMeshDrawer();
@@ -79,6 +85,9 @@ private:
     nvl::Canvas* vCanvas;
     nvl::DrawableListWidget* vDrawableListWidget;
     nvl::ModelLoaderWidget* vModelLoaderWidget;
+
+    // XML
+    std::map<std::string, int> matToMeshMap;
 
 };
 
