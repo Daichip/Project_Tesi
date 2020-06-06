@@ -191,29 +191,37 @@ void Manager::on_saveSceneButton_clicked()
         }
     }
 
-    ms::generateScene();
-
     ms::XMLScene scene;
 
-    ms::generateScene(scene, "Prova_dinamica.xml");
+//    std::cout << "CAMERA POSITION: " << vCanvas->cameraPosition() << std::endl;
+    float cx = vCanvas->cameraPosition().x();
+    float cy = vCanvas->cameraPosition().y();
+    float cz = vCanvas->cameraPosition().z();
 
-//    std::map<int, ms::Mats> aaa;
+    std::cout << "Scene Radius: " << vCanvas->sceneRadius() << std::endl;
+    vCanvas->setSceneRadius(100);
+    std::cout << "New Scene Radius: " << vCanvas->sceneRadius() << std::endl;
+
+
+    std::cout << "CAMERA POSITION: " << cx << ", " << cy << ", " << cz << std::endl;
+    scene.getSensor().setTransformOrigin({cx, cy, cz + 30});
+    scene.getSensor().setTransformTarget({cx, cy, cz});
+
+//    std::string xmlFilename = "/home/dfara/SavedScene/Scene.xml";
+//    std::string pngFilename = "/home/dfara/SavedScene/Scene.png";
+//    std::string mitsubaPath = "$HOME/mitsuba2/build/dist/mitsuba";
 
     ms::generateScene(scene, matToMeshMap);
 
+//    QMessageBox successMsg;
+//    successMsg.setText("Scene Saved!\nPlease press \"OK\" and wait for the render to finish");
+//    successMsg.exec();
 
 
-    QMessageBox successMsg;
-    successMsg.setText("Scene Saved!");
-    successMsg.exec();
-
-//    std::system("source mitsuba2/setpath.sh && mitsuba $HOME/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/SavedScene/test.xml");
 
     try {
-        // Static Scene
-        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Project_Tesi_Scene.xml");
         // Dynamic Scene
-        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/DynamicScene.xml");
+        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Scene.xml");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
@@ -222,18 +230,18 @@ void Manager::on_saveSceneButton_clicked()
 
     // Convert .EXR to .PNG
     try {
-        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Project_Tesi_Scene.exr $HOME/SavedScene/Project_Tesi_Scene.png");
-        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/DynamicScene.exr $HOME/SavedScene/DynamicScene.png");
+        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Scene.exr $HOME/SavedScene/Scene.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
     }
 
-//    qDebug() << QImageReader::supportedImageFormats();
-
-    const QImage renderImage = QImage("/home/dfara/SavedScene/DynamicScene.png").scaled(480, 270);
+    const QImage renderImage = QImage("/home/dfara/SavedScene/Scene.png").scaled(480, 270);
 
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
+    std::cout << "Image set" << std::endl;
+
+
 
 }
 

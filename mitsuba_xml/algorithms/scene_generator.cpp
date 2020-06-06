@@ -568,31 +568,33 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     dSensorFilmFilter.SetAttribute("type", scene.getSensor().getFilterName());
 
     // Step 2: Add the shapes
-    // Shape - Sphere Light
-    TiXmlElement dShapeEmit("shape");
-    dShapeEmit.SetAttribute("type", "sphere");
+//    // Shape - Sphere Light
+//    TiXmlElement dShapeEmit("shape");
+//    dShapeEmit.SetAttribute("type", "sphere");
 
-    // Shape - Sphere Light - Center
-    TiXmlElement dShapeEPoint("point");
-    dShapeEPoint.SetAttribute("name", "center");
-    dShapeEPoint.SetAttribute("x", "0");
-    dShapeEPoint.SetAttribute("y", "7");
-    dShapeEPoint.SetAttribute("z", "0");
+//    // Shape - Sphere Light - Center
+//    TiXmlElement dShapeEPoint("point");
+//    dShapeEPoint.SetAttribute("name", "center");
+//    dShapeEPoint.SetAttribute("x", "0");
+//    dShapeEPoint.SetAttribute("y", "7");
+//    dShapeEPoint.SetAttribute("z", "0");
 
-    // Test - Sphere Light - Emitter
-    TiXmlElement dEmitter("emitter");
-    dEmitter.SetAttribute("type", "area");
+//    // Test - Sphere Light - Emitter
+//    TiXmlElement dEmitter("emitter");
+//    dEmitter.SetAttribute("type", "area");
 
-    // Test - Sphere Light - Emitter - Spectrum
-    TiXmlElement dEmitterSpectrum("spectrum");
-    dEmitterSpectrum.SetAttribute("name", "radiance");
-    dEmitterSpectrum.SetAttribute("value", "100");
+//    // Test - Sphere Light - Emitter - Spectrum
+//    TiXmlElement dEmitterSpectrum("spectrum");
+//    dEmitterSpectrum.SetAttribute("name", "radiance");
+//    dEmitterSpectrum.SetAttribute("value", "100");
 
     // Envmap
     TiXmlElement dEnvmap("emitter");
+    dEnvmap.SetAttribute("type", "envmap");
     TiXmlElement dEnvmapProps("string");
     dEnvmapProps.SetAttribute("name", "filename");
-    dEnvmapProps.SetAttribute("value", "uffizi.exr");
+    dEnvmapProps.SetAttribute("value", "envmap.exr");
+    dEnvmap.InsertEndChild(dEnvmapProps);
 
     // Other Shapes
     std::vector<TiXmlElement> xmlShapes;
@@ -630,9 +632,9 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
         dSensor.InsertEndChild(dSensorSampler);
 
 
-        dEmitter.InsertEndChild(dEmitterSpectrum);
-        dShapeEmit.InsertEndChild(dShapeEPoint);
-        dShapeEmit.InsertEndChild(dEmitter);
+//        dEmitter.InsertEndChild(dEmitterSpectrum);
+//        dShapeEmit.InsertEndChild(dShapeEPoint);
+//        dShapeEmit.InsertEndChild(dEmitter);
 
 //        dShape.InsertEndChild(dShapePoint);
 //        dShape.InsertEndChild(dBsdfRef);
@@ -641,7 +643,7 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
 
         dScene.InsertEndChild(dSensor);
         dScene.InsertEndChild(dIntegrator);
-        dScene.InsertEndChild(dShapeEmit);
+//        dScene.InsertEndChild(dShapeEmit);
         dScene.InsertEndChild(dEnvmap);
 //        dScene.InsertEndChild(dShape);
         for(TiXmlElement shape : xmlShapes)
@@ -660,7 +662,7 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
                       << " meaning " << e.what() << '\n';
         }
     //    doc.SaveFile("$HOME/SavedScene/" + filename);
-        doc.SaveFile("/home/dfara/SavedScene/DynamicScene.xml");
+        doc.SaveFile("/home/dfara/SavedScene/Scene.xml");
 
 }
 
@@ -685,7 +687,7 @@ TiXmlElement ms::generateShape(int meshIndex, int matIndex)
 
     TiXmlElement dFilename("string");
     dFilename.SetAttribute("name", "filename");
-    dFilename.SetAttribute("value", std::to_string(meshIndex) + ".obj");
+    dFilename.SetAttribute("value", "/home/dfara/SavedScene/" + std::to_string(meshIndex) + ".obj");
     dShape.InsertEndChild(dFilename);
 
     dShape.InsertEndChild(ms::generateBsdf(matIndex));
