@@ -12,8 +12,8 @@ class XMLSensor
 public:
     XMLSensor();
     XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov,
-              std::string &fovAxis, std::string &sensorName, std::string &transformName,
-              std::array<float, 3> &transformTarget, std::array<float, 3> &transformOrigin, std::array<float, 3> &transformUp,
+              std::string &fovAxis, std::string modelViewMatrix, std::string &sensorName, std::string &transformName,
+              std::array<float, 3> &transformTarget, std::array<float, 3> &transformOrigin, std::array<float, 3> &transformUp, std::array<float, 3> &transformRot,
               std::string &samplerName, int sampleCount, std::string &filmName,
               int filmHeight, int filmWidth, std::string &filterName);
 
@@ -32,9 +32,12 @@ public:
     inline std::string& getSamplerName() { return mSamplerName; };
     inline std::string& getSensorType() { return mSensorType; };
     inline std::string& getTransformName() { return mTransformName; };
+    inline std::string& getModelViewMatrix() { return mModelViewMatrix; };
     inline std::array<float, 3>& getTransformOrigin() { return mTransformOrigin; };
     inline std::array<float, 3>& getTransformTarget() { return mTransformTarget; };
     inline std::array<float, 3>& getTransformUp() { return mTransformUp; };
+    inline std::array<float, 3> getTransformORot() { return mTransformORot; };
+    inline std::array<float, 3>& getTransformRot() { return mTransformRot; };
 
     inline void setFarClipValue(float farClipValue) { mFarClipValue = farClipValue; };
     inline void setFilmHeight(int filmHeight) { mFilmHeight = filmHeight; };
@@ -44,6 +47,7 @@ public:
     inline void setFocusDistance(float value) { mFocusDistance = value; };
     inline void setFov(float fov) { mFov = fov; };
     inline void setFovAxis(const std::string &fovAxis) { mFovAxis = fovAxis; } ;
+    inline void setModelViewMatrix(const std::string& modelViewMatrix) { mModelViewMatrix = modelViewMatrix; };
     inline void setNearClipValue(float nearClipValue) { mNearClipValue = nearClipValue; };
     inline void setSampleCount(int sampleCount) {mSampleCount = sampleCount;} ;
     inline void setSamplerName(const std::string &samplerName) { mSamplerName = samplerName; };
@@ -52,6 +56,10 @@ public:
     inline void setTransformOrigin(const std::array<float, 3> &transformOrigin) { mTransformOrigin = transformOrigin; };
     inline void setTransformTarget(const std::array<float, 3> &transformTarget) { mTransformTarget = transformTarget; };
     inline void setTransformUp(const std::array<float, 3> &transformUp) { mTransformUp = transformUp; };
+    inline void setTransformRot(const std::array<float, 3> &transformRot) { mTransformRot = transformRot; };
+    inline void setTransformORot(const std::array<float, 3> &transformORot) { mTransformORot = transformORot; };
+
+
 
 private:
     // Attributes
@@ -65,6 +73,9 @@ private:
     std::array<float, 3> mTransformTarget;
     std::array<float, 3> mTransformOrigin;
     std::array<float, 3> mTransformUp;
+    std::array<float, 3> mTransformORot = {0, 0, 0};
+    std::array<float, 3> mTransformRot;
+    std::string mModelViewMatrix;
     std::string mSamplerName;
     int mSampleCount;
     std::string mFilmName;

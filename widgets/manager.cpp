@@ -73,8 +73,15 @@ void Manager::slot_drawableSelectionChanged(const std::unordered_set<nvl::Skelet
 
 void Manager::slot_movableFrameChanged()
 {
-    nvl::Quaterniond rot(vCanvas->movableFrame().rotation());
-    nvl::Translation3d tra(vCanvas->movableFrame().translation());
+    nvl::Affine3d transform = vCanvas->movableFrame();
+
+    nvl::Affine3d::LinearMatrixType scaMatrix;
+    transform.computeScalingRotation(&scaMatrix, static_cast<nvl::Affine3d::LinearMatrixType*>(0));
+    nvl::Scaling3d sca(scaMatrix.diagonal());
+
+    nvl::Quaterniond rot(transform.rotation());
+
+    nvl::Translation3d tra(transform.translation());
 
     for (Index id : vDrawableListWidget->selectedDrawables()) {
         if (vCanvas->isFrameable(id)) {
@@ -94,6 +101,9 @@ void Manager::slot_movableFrameChanged()
             //Go to center
             newFrame = originTra * newFrame;
 
+            //Scale
+            newFrame = sca * newFrame;
+
             //Rotation
             newFrame = rot * newFrame;
 
@@ -108,6 +118,7 @@ void Manager::slot_movableFrameChanged()
     }
 
     vCanvas->setMovableFrame(nvl::Affine3d::Identity());
+    vCanvas->updateGL();
 }
 
 void Manager::slot_drawableAdded(const Manager::Index& id, nvl::Drawable* drawable)
@@ -186,10 +197,12 @@ void Manager::on_saveSceneButton_clicked()
             //************************************************************************************************************************************************
             std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
 
-            std::cout << "Working with Mesh: " << meshDrawer->mesh() << std::endl;
+            std::cout << "Working with Mesh: " << meshDrawer->mesh() << "\n\n" << std::endl;
             //************************************************************************************************************************************************
         }
     }
+
+//    vCanvas->
 
     ms::XMLScene scene;
 
@@ -198,18 +211,67 @@ void Manager::on_saveSceneButton_clicked()
     float cy = vCanvas->cameraPosition().y();
     float cz = vCanvas->cameraPosition().z();
 
-    std::cout << "Scene Radius: " << vCanvas->sceneRadius() << std::endl;
-    vCanvas->setSceneRadius(100);
-    std::cout << "New Scene Radius: " << vCanvas->sceneRadius() << std::endl;
+//     CAMERA POSITION
+    scene.getSensor().setTransformOrigin({cx, cy, cz});
+
+//    int radius = ui->radiusLineEdit->text().toInt();
+//    vCanvas->setCameraSceneRadius(radius);
+
+    std::cout << "Canvas Size: " << vCanvas->size().width()  << " x " << vCanvas->size().height() << std::endl;
+//    scene.getSensor().setFilmWidth(vCanvas->size().width());
+//    scene.getSensor().setFilmHeight(vCanvas->size().height());
+
+//    float coeff = ui->coeffLineEdit->text().toFloat();
+
+//    std::cout << "\n\nRadius: " << radius << "\nCoeff: " << coeff << "\n\n" << std::endl;
+
+    Eigen::Vector3d target = vCanvas->cameraPosition() + (vCanvas->cameraViewDirection());
+    std::cout << "Camera Position: " << vCanvas->cameraPosition() << "\nCamera Direction: " << vCanvas->cameraViewDirection() << "\nCamera Scene Radius: " << vCanvas->cameraSceneRadius() << "\n" << std::endl;
+    std::cout << "Camera Direction * Scene Radius: " << vCanvas->cameraViewDirection() * vCanvas->cameraSceneRadius() << "\n" << std::endl;
+    std::cout << "Camera Position + Product: " << vCanvas->cameraPosition() + (vCanvas->cameraViewDirection() * vCanvas->cameraSceneRadius()) << "\n" << "\n" << std::endl;
+    std::cout << "Target: " << target << "\n\n" << std::endl;
+
+    float tx = target.x();
+    float ty = target.y();
+    float tz = target.z();
+    scene.getSensor().setTransformTarget({tx, ty, tz});
+
+    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
+    GLdouble* matrix = modelViewMatrix.data();
+
+    std::string mvm = "";
 
 
-    std::cout << "CAMERA POSITION: " << cx << ", " << cy << ", " << cz << std::endl;
-    scene.getSensor().setTransformOrigin({cx, cy, cz + 30});
-    scene.getSensor().setTransformTarget({cx, cy, cz});
+    nvl::Matrix44d viewProjectionMatrix = vCanvas->cameraModelViewProjectionMatrix();
+    GLdouble* viewProjMatrix = viewProjectionMatrix.data();
 
-//    std::string xmlFilename = "/home/dfara/SavedScene/Scene.xml";
-//    std::string pngFilename = "/home/dfara/SavedScene/Scene.png";
-//    std::string mitsubaPath = "$HOME/mitsuba2/build/dist/mitsuba";
+
+    nvl::Matrix44d projectionMatrix = vCanvas->cameraProjectionMatrix();
+    GLdouble* projMatrix = projectionMatrix.data();  
+
+
+    std::cout << "Camera model view matrix: ";
+    for (int i = 0; i < 15; i++) {
+           std::cout << matrix[i] << " ";
+           mvm += std::to_string(matrix[i]) + ", ";
+       }
+    mvm += std::to_string(matrix[15]);
+    std::cout << std::endl;
+
+    scene.getSensor().setModelViewMatrix(mvm);
+
+    std::cout << "\n\nCamera model View Projection matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << viewProjMatrix[i] << " ";
+       }
+    std::cout << std::endl;
+
+    std::cout << "\n\nCamera Projection matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << projMatrix[i] << " ";
+       }
+    std::cout << std::endl;
+
 
     ms::generateScene(scene, matToMeshMap);
 
@@ -236,8 +298,12 @@ void Manager::on_saveSceneButton_clicked()
                   << " meaning " << e.what() << '\n';
     }
 
-    const QImage renderImage = QImage("/home/dfara/SavedScene/Scene.png").scaled(480, 270);
 
+//    int width = scene.getSensor().getFilmWidth();
+//    int height = scene.getSensor().getFilmHeight();
+//    int w_coeff = 480/width;
+//    int h_coeff = 270/height;
+    const QImage renderImage = QImage("/home/dfara/SavedScene/Scene.png").scaled(480, 270);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
 
@@ -321,7 +387,10 @@ int Manager::findDrawableIndex()
 
 
 
-
+//std::array<float, 3>& computeNewCameraRotation(std::array<float, 3>& oldRotation)
+//{
+//    ;
+//}
 
 
 

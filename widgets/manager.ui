@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>336</width>
-    <height>332</height>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,6 +48,50 @@
        <widget class="QRadioButton" name="materialPlasticGreenRadio">
         <property name="text">
          <string>Plastic (green)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="radiusGroupBox">
+     <property name="title">
+      <string>Radius</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="radiusLineEdit">
+        <property name="baseSize">
+         <size>
+          <width>320</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="coeffGroupBox">
+     <property name="title">
+      <string>Coeff</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="coeffLineEdit">
+        <property name="baseSize">
+         <size>
+          <width>320</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>1</string>
         </property>
        </widget>
       </item>

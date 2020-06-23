@@ -540,6 +540,10 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     arrayToString(vts, scene.getSensor().getTransformUp());
     dSensorTransformLA.SetAttribute("up", vts.str());
 
+    TiXmlElement dSensorTransformMatrix("matrix");
+    dSensorTransformMatrix.SetAttribute("value", scene.getSensor().getModelViewMatrix());
+
+
     // Sensor - Sampler
     TiXmlElement dSensorSampler("sampler");
     dSensorSampler.SetAttribute("type", "independent");
@@ -612,6 +616,11 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
         dSensorSampler.InsertEndChild(dSensorSamplerSC);
 
         dSensorTransform.InsertEndChild(dSensorTransformLA);
+        dSensorTransform.InsertEndChild(dSensorTransformMatrix);
+//        dSensorTransform.InsertEndChild(dSensorTransformRotX);
+//        dSensorTransform.InsertEndChild(dSensorTransformRotY);
+//        dSensorTransform.InsertEndChild(dSensorTransformRotZ);
+
 
         dSensorFilm.InsertEndChild(dSensorFilmH);
         dSensorFilm.InsertEndChild(dSensorFilmW);
@@ -622,11 +631,11 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
     //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
 
-        dSensor.InsertEndChild(dSensorFarClip);
-        dSensor.InsertEndChild(dSensorNearClip);
-        dSensor.InsertEndChild(dSensorFocusDistance);
+//        dSensor.InsertEndChild(dSensorFarClip);
+//        dSensor.InsertEndChild(dSensorNearClip);
+//        dSensor.InsertEndChild(dSensorFocusDistance);
         dSensor.InsertEndChild(dSensorFov);
-        dSensor.InsertEndChild(dSensorFovAxis);
+//        dSensor.InsertEndChild(dSensorFovAxis);
         dSensor.InsertEndChild(dSensorTransform);
         dSensor.InsertEndChild(dSensorFilm);
         dSensor.InsertEndChild(dSensorSampler);
