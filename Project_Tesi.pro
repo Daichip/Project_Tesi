@@ -83,6 +83,6 @@ FORMS += \
 
 
 INCLUDEPATH += \
-               $$PWD/libs/ticpp
+    $$TICPP_PATH
 
-LIBS += -L"$$PWD/libs/ticpp/lib" -lticpp
+LIBS += -L"$$TICPP_PATH" -lticpp

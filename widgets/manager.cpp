@@ -242,12 +242,12 @@ void Manager::on_saveSceneButton_clicked()
     std::string mvm = "";
 
 
-    nvl::Matrix44d viewProjectionMatrix = vCanvas->cameraModelViewProjectionMatrix();
-    GLdouble* viewProjMatrix = viewProjectionMatrix.data();
+//    nvl::Matrix44d viewProjectionMatrix = vCanvas->cameraModelViewProjectionMatrix();
+//    GLdouble* viewProjMatrix = viewProjectionMatrix.data();
 
 
-    nvl::Matrix44d projectionMatrix = vCanvas->cameraProjectionMatrix();
-    GLdouble* projMatrix = projectionMatrix.data();  
+//    nvl::Matrix44d projectionMatrix = vCanvas->cameraProjectionMatrix();
+//    GLdouble* projMatrix = projectionMatrix.data();
 
 
     std::cout << "Camera model view matrix: ";
@@ -260,17 +260,17 @@ void Manager::on_saveSceneButton_clicked()
 
     scene.getSensor().setModelViewMatrix(mvm);
 
-    std::cout << "\n\nCamera model View Projection matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << viewProjMatrix[i] << " ";
-       }
-    std::cout << std::endl;
+//    std::cout << "\n\nCamera model View Projection matrix: ";
+//    for (int i = 0; i < 16; i++) {
+//           std::cout << viewProjMatrix[i] << " ";
+//       }
+//    std::cout << std::endl;
 
-    std::cout << "\n\nCamera Projection matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << projMatrix[i] << " ";
-       }
-    std::cout << std::endl;
+//    std::cout << "\n\nCamera Projection matrix: ";
+//    for (int i = 0; i < 16; i++) {
+//           std::cout << projMatrix[i] << " ";
+//       }
+//    std::cout << std::endl;
 
 
     ms::generateScene(scene, matToMeshMap);
@@ -292,7 +292,8 @@ void Manager::on_saveSceneButton_clicked()
 
     // Convert .EXR to .PNG
     try {
-        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Scene.exr $HOME/SavedScene/Scene.png");
+//        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Scene.exr $HOME/SavedScene/Scene.png");
+        std::system("convert $HOME/SavedScene/Scene.exr -colorspace RGB -colorspace sRGB $HOME/SavedScene/Scene.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
