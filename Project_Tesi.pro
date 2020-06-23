@@ -57,7 +57,6 @@ include($$NUVOLIB_PATH/nuvolib/nuvolib.pri)
 #Project files
 SOURCES += \
     main.cpp \
-    mitsuba_xml/algorithms/image_manipulation.cpp \
     mitsuba_xml/algorithms/scene_generator.cpp \
     mitsuba_xml/data_structures/meshmitsubaprops.cpp \
     mitsuba_xml/data_structures/xmlbsdf.cpp \
@@ -68,7 +67,6 @@ SOURCES += \
     widgets/manager.cpp
 
 HEADERS += \
-    mitsuba_xml/algorithms/image_manipulation.h \
     mitsuba_xml/algorithms/scene_generator.h \
     mitsuba_xml/data_structures/meshmitsubaprops.h \
     mitsuba_xml/data_structures/xmlbsdf.h \
@@ -85,4 +83,4 @@ FORMS += \
 INCLUDEPATH += \
     $$TICPP_PATH
 
-LIBS += -L"$$TICPP_PATH" -lticpp
+LIBS += -L"$$TICPP_PATH/lib" -lticpp
