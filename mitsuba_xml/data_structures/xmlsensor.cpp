@@ -10,7 +10,7 @@ ms::XMLSensor::XMLSensor():
     mTransformName("to_world"),
     mTransformTarget(std::array<float, 3> {0, 0, 0}),
     mTransformOrigin(std::array<float, 3> {0, 0, 5}),
-    mTransformUp(std::array<float, 3> {1, 0, 0}),
+    mTransformUp(std::array<float, 3> {0, 1, 0}),
     mTransformRot(std::array<float, 3> {0, 0, 0}),
     mSamplerName("independent"),
     mSampleCount(128),

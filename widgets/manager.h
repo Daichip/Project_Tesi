@@ -1,6 +1,9 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+//#define MITSUBA_PATH
+//#define RESULTS_FOLDER
+
 #include <QFrame>
 #include <QWidget>
 #include <QMessageBox>
@@ -84,6 +87,7 @@ private:
     // XML Methods
     void addToMap(ms::Mats mat, int index);
     int findDrawableIndex();
+    void setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas);
 
     //Interface fields
     Ui::Manager *ui;

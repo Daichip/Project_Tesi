@@ -1,4 +1,12 @@
 ############################ CONFIGURATION ############################
+# Paths
+MITSUBA_PATH = \\"/home/dfara/mitsuba2/build/dist/mitsuba\\"
+DEFINES += MITSUBA_PATH='$$MITSUBA_PATH'
+
+RESULTS_FOLDER = \\"/home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results\\"
+DEFINES += RESULTS_FOLDER='$$RESULTS_FOLDER'
+
+
 
 #Libraries paths
 NUVOLIB_PATH = $$PWD/libs/nuvolib
@@ -58,7 +66,6 @@ include($$NUVOLIB_PATH/nuvolib/nuvolib.pri)
 SOURCES += \
     main.cpp \
     mitsuba_xml/algorithms/scene_generator.cpp \
-    mitsuba_xml/data_structures/meshmitsubaprops.cpp \
     mitsuba_xml/data_structures/xmlbsdf.cpp \
     mitsuba_xml/data_structures/xmlintegrator.cpp \
     mitsuba_xml/data_structures/xmlscene.cpp \
@@ -68,7 +75,6 @@ SOURCES += \
 
 HEADERS += \
     mitsuba_xml/algorithms/scene_generator.h \
-    mitsuba_xml/data_structures/meshmitsubaprops.h \
     mitsuba_xml/data_structures/xmlbsdf.h \
     mitsuba_xml/data_structures/xmlintegrator.h \
     mitsuba_xml/data_structures/xmlscene.h \

@@ -185,6 +185,13 @@ void Manager::connectSignals()
 
 void Manager::on_saveSceneButton_clicked()
 {
+    try {
+        std::system("mkdir Results");
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+
     for (Index i = 0; i < vCanvas->drawableNumber(); ++i) {
         Drawable* drawable = vCanvas->drawable(i);
 
@@ -192,7 +199,7 @@ void Manager::on_saveSceneButton_clicked()
         if (meshDrawer != nullptr) {
             Mesh meshCopy = *meshDrawer->mesh();
             nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
-            nvl::meshSaveToFile("/home/dfara/SavedScene/" + std::to_string(i) + ".obj", meshCopy);
+            nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
 
             //************************************************************************************************************************************************
             std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
@@ -206,75 +213,7 @@ void Manager::on_saveSceneButton_clicked()
 
     ms::XMLScene scene;
 
-//    std::cout << "CAMERA POSITION: " << vCanvas->cameraPosition() << std::endl;
-    float cx = vCanvas->cameraPosition().x();
-    float cy = vCanvas->cameraPosition().y();
-    float cz = vCanvas->cameraPosition().z();
-
-//     CAMERA POSITION
-    scene.getSensor().setTransformOrigin({cx, cy, cz});
-
-//    int radius = ui->radiusLineEdit->text().toInt();
-//    vCanvas->setCameraSceneRadius(radius);
-
-    std::cout << "Canvas Size: " << vCanvas->size().width()  << " x " << vCanvas->size().height() << std::endl;
-//    scene.getSensor().setFilmWidth(vCanvas->size().width());
-//    scene.getSensor().setFilmHeight(vCanvas->size().height());
-
-//    float coeff = ui->coeffLineEdit->text().toFloat();
-
-//    std::cout << "\n\nRadius: " << radius << "\nCoeff: " << coeff << "\n\n" << std::endl;
-
-    Eigen::Vector3d target = vCanvas->cameraPosition() + (vCanvas->cameraViewDirection());
-    std::cout << "Camera Position: " << vCanvas->cameraPosition() << "\nCamera Direction: " << vCanvas->cameraViewDirection() << "\nCamera Scene Radius: " << vCanvas->cameraSceneRadius() << "\n" << std::endl;
-    std::cout << "Camera Direction * Scene Radius: " << vCanvas->cameraViewDirection() * vCanvas->cameraSceneRadius() << "\n" << std::endl;
-    std::cout << "Camera Position + Product: " << vCanvas->cameraPosition() + (vCanvas->cameraViewDirection() * vCanvas->cameraSceneRadius()) << "\n" << "\n" << std::endl;
-    std::cout << "Target: " << target << "\n\n" << std::endl;
-
-    float tx = target.x();
-    float ty = target.y();
-    float tz = target.z();
-    scene.getSensor().setTransformTarget({tx, ty, tz});
-
-    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
-    GLdouble* matrix = modelViewMatrix.data();
-
-    std::string mvm = "";
-
-
-//    nvl::Matrix44d viewProjectionMatrix = vCanvas->cameraModelViewProjectionMatrix();
-//    GLdouble* viewProjMatrix = viewProjectionMatrix.data();
-
-
-//    nvl::Matrix44d projectionMatrix = vCanvas->cameraProjectionMatrix();
-//    GLdouble* projMatrix = projectionMatrix.data();
-
-
-    std::cout << "Camera model view matrix: ";
-    for (int i = 0; i < 15; i++) {
-           std::cout << matrix[i] << " ";
-           mvm += std::to_string(matrix[i]) + ", ";
-       }
-    mvm += std::to_string(matrix[15]);
-    std::cout << std::endl;
-
-    scene.getSensor().setModelViewMatrix(mvm);
-
-//    std::cout << "\n\nCamera model View Projection matrix: ";
-//    for (int i = 0; i < 16; i++) {
-//           std::cout << viewProjMatrix[i] << " ";
-//       }
-//    std::cout << std::endl;
-
-//    std::cout << "\n\nCamera Projection matrix: ";
-//    for (int i = 0; i < 16; i++) {
-//           std::cout << projMatrix[i] << " ";
-//       }
-//    std::cout << std::endl;
-
-
-    ms::generateScene(scene, matToMeshMap);
-
+    setupAndGenerateScene(scene, vCanvas);
 //    QMessageBox successMsg;
 //    successMsg.setText("Scene Saved!\nPlease press \"OK\" and wait for the render to finish");
 //    successMsg.exec();
@@ -283,7 +222,8 @@ void Manager::on_saveSceneButton_clicked()
 
     try {
         // Dynamic Scene
-        std::system("$HOME/mitsuba2/build/dist/mitsuba $HOME/SavedScene/Scene.xml");
+        std::system("$HOME/mitsuba2/build/dist/mitsuba /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results/Scene.xml && convert /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results/Scene.exr /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results/Scene.png");
+//        std::system(MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
@@ -292,24 +232,16 @@ void Manager::on_saveSceneButton_clicked()
 
     // Convert .EXR to .PNG
     try {
-//        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/SavedScene/Scene.exr $HOME/SavedScene/Scene.png");
-        std::system("convert $HOME/SavedScene/Scene.exr -colorspace RGB -colorspace sRGB $HOME/SavedScene/Scene.png");
+//        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/Results/Scene.exr $HOME/Results/Scene.png");
+        std::system("convert /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results/Scene.exr -colorspace RGB -colorspace sRGB /home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results/Scene.png");
     } catch(const std::system_error& e) {
         std::cout << "Caught system_error with code " << e.code()
                   << " meaning " << e.what() << '\n';
     }
 
-
-//    int width = scene.getSensor().getFilmWidth();
-//    int height = scene.getSensor().getFilmHeight();
-//    int w_coeff = 480/width;
-//    int h_coeff = 270/height;
-    const QImage renderImage = QImage("/home/dfara/SavedScene/Scene.png").scaled(480, 270);
+    const QImage renderImage = QImage("Results/Scene.png").scaled(480, 270);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
-
-
-
 }
 
 void Manager::on_materialGoldRadio_clicked()
@@ -340,7 +272,63 @@ void Manager::on_materialMirrorRadio_clicked()
 }
 
 
+void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
+{
+    scene.setNumberOfShapesPresent(vCanvas->drawableNumber());
 
+    // Camera Origin
+    float cx = vCanvas->cameraPosition().x();
+    float cy = vCanvas->cameraPosition().y();
+    float cz = vCanvas->cameraPosition().z();
+    scene.getSensor().setTransformOrigin({cx, cy, cz});
+
+    // Camera Target
+    Eigen::Vector3d target = vCanvas->cameraPosition() + (vCanvas->cameraViewDirection());
+
+    float tx = target.x();
+    float ty = target.y();
+    float tz = target.z();
+    scene.getSensor().setTransformTarget({tx, ty, tz});
+
+    // ModelView Matrix
+    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
+    GLdouble* matrix = modelViewMatrix.data();
+
+    std::string mvm = "";
+
+
+    nvl::Matrix44d viewProjectionMatrix = vCanvas->cameraModelViewProjectionMatrix();
+    GLdouble* viewProjMatrix = viewProjectionMatrix.data();
+
+
+    nvl::Matrix44d projectionMatrix = vCanvas->cameraProjectionMatrix();
+    GLdouble* projMatrix = projectionMatrix.data();
+
+
+    std::cout << "Camera model view matrix: ";
+    for (int i = 0; i < 15; i++) {
+           mvm += std::to_string(matrix[i]) + ", ";
+       }
+    mvm += std::to_string(matrix[15]);
+
+    scene.getSensor().setModelViewMatrix(mvm);
+
+    std::cout << "\n\nCamera model View Projection matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << viewProjMatrix[i] << " ";
+       }
+    std::cout << std::endl;
+
+    std::cout << "\n\nCamera Projection matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << projMatrix[i] << " ";
+       }
+    std::cout << std::endl;
+
+
+    ms::generateScene(scene, matToMeshMap);
+
+}
 
 void Manager::addToMap(ms::Mats mat, int index)
 {
@@ -384,16 +372,6 @@ int Manager::findDrawableIndex()
 
     return selectedIndex;
 }
-
-
-
-
-//std::array<float, 3>& computeNewCameraRotation(std::array<float, 3>& oldRotation)
-//{
-//    ;
-//}
-
-
 
 
 

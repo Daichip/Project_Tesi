@@ -24,6 +24,7 @@ public:
     inline XMLSensor& getSensor() { return mSensor; };
     inline std::vector<XMLBsdf>& getBsdfs() { return mBsdfs; } ;
     inline std::vector<XMLShape>& getShapes() { return mShapes; } ;
+    inline int getNumberOfShapesPresent() { return mNumberOfShapesPresent; }
 
     inline void setIntegrator(const XMLIntegrator &integrator) { mIntegrator = integrator; } ;
     inline void setSensor(const XMLSensor &sensor) { mSensor = sensor; } ;
@@ -31,6 +32,7 @@ public:
     inline void setBsdfs(const std::vector<XMLBsdf> &bsdfv) { mBsdfs = bsdfv; };
     inline void addBsdf(XMLBsdf& bsdf) { mBsdfs.push_back(bsdf); };
     inline void addShape(XMLShape& shape) { mShapes.push_back(shape); };
+    inline void setNumberOfShapesPresent(int nosp) { mNumberOfShapesPresent = nosp; };
 
 
 
@@ -42,6 +44,8 @@ private:
     XMLSensor mSensor;
     std::vector<XMLBsdf> mBsdfs;
     std::vector<XMLShape> mShapes; // can have multiple shapes
+
+    int mNumberOfShapesPresent;
 };
 
 } // end namespace ms
