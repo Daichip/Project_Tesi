@@ -1,9 +1,9 @@
 ############################ CONFIGURATION ############################
 # Paths
-MITSUBA_PATH = \\"/home/dfara/mitsuba2/build/dist/mitsuba\\"
+MITSUBA_PATH = \\\"/home/dfara/mitsuba2/build/dist/mitsuba\\\"
 DEFINES += MITSUBA_PATH='$$MITSUBA_PATH'
 
-RESULTS_FOLDER = \\"/home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results\\"
+RESULTS_FOLDER = \\\"/home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results\\\"
 DEFINES += RESULTS_FOLDER='$$RESULTS_FOLDER'
 
 
