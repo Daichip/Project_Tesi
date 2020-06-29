@@ -85,6 +85,7 @@ private:
     void addToMap(ms::Mats mat, int index);
     int findDrawableIndex();
     void setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas);
+    void executeCommand(std::string command);
 
     //Interface fields
     Ui::Manager *ui;

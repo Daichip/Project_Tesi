@@ -223,37 +223,37 @@ void Manager::on_saveSceneButton_clicked()
     //* SYSTEM CALLS + Set Image
 #ifdef RESULTS_FOLDER
 #ifdef MITSUBA_PATH
-    try {
-        // Dynamic Scene
-        std::string cmd_render = (std::string)MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml";
-        std::system(cmd_render.c_str());
-    } catch(const std::system_error& e) {
-        std::cout << "Caught system_error with code " << e.code()
-                  << " meaning " << e.what() << '\n';
-    }
-#endif
+    std::string cmd_render = (std::string)MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml";
+//    executeCommand(cmd_render);
 
 
     // Convert .EXR to .PNG
-    try {
-//        std::system("$HOME/exrtools-0.4/src/exrtopng $HOME/Results/Scene.exr $HOME/Results/Scene.png");
-        std::string cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene.png";
-        std::system(cmd_convert.c_str());
-    } catch(const std::system_error& e) {
-        std::cout << "Caught system_error with code " << e.code()
-                  << " meaning " << e.what() << '\n';
-    }
-
+    std::string cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene.png";
+//    executeCommand(cmd_convert);
 
       // Test to adjust picture dimention while retaining scale
 //    int w_coeff = vCanvas->width() / 480;
 //    int h_coeff = vCanvas->height() / 270;
 //    std::cout << "Width: " << vCanvas->width() << "\tHeight: " << vCanvas->height() << "\nW_C: " << w_coeff << "\tH_C: " << h_coeff << std::endl;
 //    const QImage renderImage = QImage("Results/Scene.png").scaled(vCanvas->width() / w_coeff, vCanvas->height() / h_coeff);
+//    const QImage renderImage = QImage("Results/Scene.png").scaled(vCanvas->width() / 4, vCanvas->height() / 4);
     const QImage renderImage = QImage("Results/Scene.png").scaled(480, 270);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
 
+
+    /// TEST ///
+    // Create full canvas size image
+//    scene.getSensor().setFilmWidth(vCanvas->width());
+//    scene.getSensor().setFilmHeight(vCanvas->height());
+//    setupAndGenerateScene(scene, vCanvas);
+
+//    cmd_render = (std::string)MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml";
+//    executeCommand(cmd_render);
+
+//    cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene_FS.png";
+//    executeCommand(cmd_convert);
+#endif
 #endif
 }
 
@@ -288,23 +288,21 @@ void Manager::on_materialMirrorRadio_clicked()
 void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
 {
     scene.setNumberOfShapesPresent(vCanvas->drawableNumber());
-    // Used in the test mentioned above to retain image scale
 //    scene.getSensor().setFilmWidth(vCanvas->width());
 //    scene.getSensor().setFilmHeight(vCanvas->height());
 
     // Camera Origin
-    float cx = vCanvas->cameraPosition().x();
-    float cy = vCanvas->cameraPosition().y();
-    float cz = vCanvas->cameraPosition().z();
-    scene.getSensor().setTransformOrigin({cx, cy, cz});
+//    float cx = vCanvas->cameraPosition().x();
+//    float cy = vCanvas->cameraPosition().y();
+//    float cz = vCanvas->cameraPosition().z();
+//    scene.getSensor().setTransformOrigin({cx, cy, cz});
 
     // Camera Target
-    Eigen::Vector3d target = vCanvas->cameraPosition() + (vCanvas->cameraViewDirection());
-
-    float tx = target.x();
-    float ty = target.y();
-    float tz = target.z();
-    scene.getSensor().setTransformTarget({tx, ty, tz});
+//    Eigen::Vector3d target = vCanvas->cameraPosition() + (vCanvas->cameraViewDirection());
+//    float tx = target.x();
+//    float ty = target.y();
+//    float tz = target.z();
+//    scene.getSensor().setTransformTarget({tx, ty, tz});
 
     // ModelView Matrix
     nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
@@ -394,9 +392,15 @@ int Manager::findDrawableIndex()
 
 
 
-
-
-
+void Manager::executeCommand(std::string command)
+{
+    try {
+        std::system(command.c_str());
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+}
 
 
 
