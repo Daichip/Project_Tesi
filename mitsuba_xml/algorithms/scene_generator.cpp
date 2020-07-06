@@ -173,19 +173,24 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     // Other Shapes
     std::vector<TiXmlElement> xmlShapes;
 
-    if(map.begin() != map.end()) {
-        // For each mesh in the map, we need to check its material and generate the correct XML
-        for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
-        {
-           xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
-        }
-
-    } else{
-        for(int i = 0; i < scene.getNumberOfShapesPresent(); i++)
-        {
-            xmlShapes.push_back(ms::generateShape(i, 0));
-        }
+    for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
+    {
+       xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
     }
+
+//    if(map.begin() != map.end()) {
+//        // For each mesh in the map, we need to check its material and generate the correct XML
+//        for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
+//        {
+//           xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
+//        }
+
+//    } else{
+//        for(int i = 0; i < scene.getNumberOfShapesPresent(); i++)
+//        {
+//            xmlShapes.push_back(ms::generateShape(i, 0));
+//        }
+//    }
 
     // Step 4: add all elements
         doc.InsertEndChild(decl); // Add the declaration to the document

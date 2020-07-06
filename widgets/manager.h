@@ -14,6 +14,8 @@
 #include <nvl/viewer/widgets/skeletonjoint_list_widget.h>
 #include <nvl/viewer/widgets/model_loader_widget.h>
 
+#include <nvl/models/mesh_transformations.h>
+
 #include <nvl/models/model.h>
 #include <nvl/models/meshes.h>
 

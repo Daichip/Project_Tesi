@@ -201,11 +201,34 @@ void Manager::on_saveSceneButton_clicked()
             nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
             nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
 
-            //************************************************************************************************************************************************
-            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
+//            Eigen::Vector3d t_vec(0, 0, -3);
+//            nvl::Translation3d t_mat = nvl::Translation3d(0, 0, 3);
+//            nvl::meshApplyTransformation(meshCopy, nvl::Translation3d(t_vec));
+//            nvl::meshSaveToFile("Results/" + std::to_string(i) + "_translated.obj", meshCopy);
 
-            std::cout << "Working with Mesh: " << meshDrawer->mesh() << "\n\n" << std::endl;
+
+            // -------
+//            nvl::AlignedBox3<double> boundingBox = nvl::meshBoundingBox(meshCopy);
+//            int f = ui->coeffLineEdit->text().toInt();
+//            float mult = f / boundingBox.diagonal().norm();
+//            Eigen::Vector3d div(mult, mult, mult);
+//            nvl::Scaling3<double> scalingM(div);
+
+//            nvl::meshApplyTransformation(meshCopy, scalingM);
+//            nvl::meshSaveToFile("Results/" + std::to_string(i) + "_scaled_" + std::to_string(f) + ".obj", meshCopy);
+
+
+
             //************************************************************************************************************************************************
+//            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
+
+//            std::cout << "Working with Mesh: " << meshDrawer->mesh() << "\n\n" << std::endl;
+            //************************************************************************************************************************************************
+            // Automatically associates an element (Green Plastic) to a mesh if not set already
+            auto findIT = matToMeshMap.find(i); // separated in order to avoid n checks
+            if(findIT == matToMeshMap.end())
+                addToMap(ms::Mats::PGreen, i);
+
         }
     }
 
@@ -224,12 +247,12 @@ void Manager::on_saveSceneButton_clicked()
 #ifdef RESULTS_FOLDER
 #ifdef MITSUBA_PATH
     std::string cmd_render = (std::string)MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml";
-//    executeCommand(cmd_render);
+    executeCommand(cmd_render);
 
 
     // Convert .EXR to .PNG
     std::string cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene.png";
-//    executeCommand(cmd_convert);
+    executeCommand(cmd_convert);
 
       // Test to adjust picture dimention while retaining scale
 //    int w_coeff = vCanvas->width() / 480;
@@ -291,18 +314,30 @@ void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
 //    scene.getSensor().setFilmWidth(vCanvas->width());
 //    scene.getSensor().setFilmHeight(vCanvas->height());
 
+    Eigen::Vector3d sceneCenter = vCanvas->cameraSceneCenter();
+    std::cout << "Scene Center: " << sceneCenter << "\n\n" << std::endl;
+
+    std::cout << "\nCamera Orientation: " << vCanvas->cameraOrientation().x() << "\n" << vCanvas->cameraOrientation().y() << "\n" <<vCanvas->cameraOrientation().z() << "\n" <<vCanvas->cameraOrientation().w() << "\n" << std::endl;
+
     // Camera Origin
-//    float cx = vCanvas->cameraPosition().x();
-//    float cy = vCanvas->cameraPosition().y();
-//    float cz = vCanvas->cameraPosition().z();
+//    vCanvas->setCameraPosition(nvl::Point3d(0,0,0));
+    Eigen::Vector3d camera = vCanvas->cameraPosition();
+    float cx = camera.x();
+    float cy = camera.y();
+    float cz = camera.z();
+//    std::cout << "\nCamera Origin: " << cx << ", " << cy << ", " << cz << std::endl;
+      std::cout << "\nCamera Origin: " << vCanvas->cameraPosition() << std::endl;
 //    scene.getSensor().setTransformOrigin({cx, cy, cz});
+    float newZ = vCanvas->cameraSceneRadius() * 3;
+    scene.getSensor().setTransformOrigin({0, 0, newZ});
 
     // Camera Target
-//    Eigen::Vector3d target = vCanvas->cameraPosition() + (vCanvas->cameraViewDirection());
-//    float tx = target.x();
-//    float ty = target.y();
-//    float tz = target.z();
-//    scene.getSensor().setTransformTarget({tx, ty, tz});
+    Eigen::Vector3d target = vCanvas->cameraPosition() + vCanvas->cameraViewDirection();
+    float tx = target.x();
+    float ty = target.y();
+    float tz = target.z();
+//    std::cout << "\nCamera Target: " << tx << ", " << ty << ", " << tz << std::endl;
+      scene.getSensor().setTransformTarget({tx, ty, tz});
 
     // ModelView Matrix
     nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
@@ -319,11 +354,16 @@ void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
     GLdouble* projMatrix = projectionMatrix.data();
 
 
-    std::cout << "Camera model view matrix: ";
+   std::cout << "\nCamera Direction: " << vCanvas->cameraViewDirection() << std::endl;
+   std::cout << "\nScene Radius: " << vCanvas->cameraSceneRadius() << std::endl;
+   std::cout << "\nScene Center: " << vCanvas->cameraSceneCenter() << std::endl;
+
+    std::cout << "\n\nCamera model view matrix: ";
     for (int i = 0; i < 15; i++) {
            std::cout << matrix[i] << " ";
            mvm += std::to_string(matrix[i]) + ", ";
        }
+    std::cout << matrix[15];
     mvm += std::to_string(matrix[15]);
 
     // Set the MVM to be used in the XML file
@@ -333,13 +373,47 @@ void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
     for (int i = 0; i < 16; i++) {
            std::cout << viewProjMatrix[i] << " ";
        }
-    std::cout << std::endl;
 
     std::cout << "\n\nCamera Projection matrix: ";
     for (int i = 0; i < 16; i++) {
            std::cout << projMatrix[i] << " ";
        }
-    std::cout << std::endl;
+    std::cout << "\n\n\n" << std::endl;
+
+    //**********************
+    nvl::Matrix44d modelViewMatrixT = vCanvas->cameraModelViewMatrix().transpose();
+    GLdouble* mvmT = modelViewMatrixT.data();
+
+
+    nvl::Matrix44d viewProjectionMatrixT = vCanvas->cameraModelViewProjectionMatrix().transpose();
+    GLdouble* vpmT = viewProjectionMatrixT.data();
+
+
+    nvl::Matrix44d projectionMatrixT = vCanvas->cameraProjectionMatrix().transpose();
+    GLdouble* pmT = projectionMatrixT.data();
+
+
+    std::cout << "\n\nTransposed Camera model view matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << mvmT[i] << " ";
+       }
+
+    // Set the MVM to be used in the XML file
+    scene.getSensor().setModelViewMatrix(mvm);
+
+    std::cout << "\n\nTransposed Camera model View Projection matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << vpmT[i] << " ";
+       }
+
+    std::cout << "\n\nTransposed Camera Projection matrix: ";
+    for (int i = 0; i < 16; i++) {
+           std::cout << pmT[i] << " ";
+       }
+    std::cout << "\n\n\n" << std::endl;
+    //**********************
+
+
 
 
     ms::generateScene(scene, matToMeshMap);

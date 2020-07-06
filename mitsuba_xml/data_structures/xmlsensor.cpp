@@ -8,15 +8,15 @@ ms::XMLSensor::XMLSensor():
     mFovAxis("y"),
     mSensorType("perspective"),
     mTransformName("to_world"),
-    mTransformTarget(std::array<float, 3> {0, 0, 0}),
-    mTransformOrigin(std::array<float, 3> {0, 0, 3}),
+    mTransformTarget(std::array<float, 3> {0, 0, -3}),
+    mTransformOrigin(std::array<float, 3> {0, 0, 0}),
     mTransformUp(std::array<float, 3> {0, 1, 0}),
     mTransformRot(std::array<float, 3> {0, 0, 0}),
     mSamplerName("independent"),
-    mSampleCount(128),
+    mSampleCount(512),
     mFilmName("hdrfilm"),
-    mFilmHeight(1080),
-    mFilmWidth(1920),
+    mFilmHeight(270),
+    mFilmWidth(480),
     mFilterName("gaussian")
 {
     std::cout << "Target: " << getTransformTarget()[0] << ", " << getTransformTarget()[1] <<  ", " << getTransformTarget()[2] << std::endl;
