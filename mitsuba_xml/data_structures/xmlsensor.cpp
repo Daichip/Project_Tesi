@@ -8,7 +8,7 @@ ms::XMLSensor::XMLSensor():
     mFovAxis("y"),
     mSensorType("perspective"),
     mTransformName("to_world"),
-    mTransformTarget(std::array<float, 3> {0, 0, -3}),
+    mTransformTarget(std::array<float, 3> {0, 0, -1}),
     mTransformOrigin(std::array<float, 3> {0, 0, 0}),
     mTransformUp(std::array<float, 3> {0, 1, 0}),
     mTransformRot(std::array<float, 3> {0, 0, 0}),

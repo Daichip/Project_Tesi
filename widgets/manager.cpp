@@ -201,24 +201,6 @@ void Manager::on_saveSceneButton_clicked()
             nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
             nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
 
-//            Eigen::Vector3d t_vec(0, 0, -3);
-//            nvl::Translation3d t_mat = nvl::Translation3d(0, 0, 3);
-//            nvl::meshApplyTransformation(meshCopy, nvl::Translation3d(t_vec));
-//            nvl::meshSaveToFile("Results/" + std::to_string(i) + "_translated.obj", meshCopy);
-
-
-            // -------
-//            nvl::AlignedBox3<double> boundingBox = nvl::meshBoundingBox(meshCopy);
-//            int f = ui->coeffLineEdit->text().toInt();
-//            float mult = f / boundingBox.diagonal().norm();
-//            Eigen::Vector3d div(mult, mult, mult);
-//            nvl::Scaling3<double> scalingM(div);
-
-//            nvl::meshApplyTransformation(meshCopy, scalingM);
-//            nvl::meshSaveToFile("Results/" + std::to_string(i) + "_scaled_" + std::to_string(f) + ".obj", meshCopy);
-
-
-
             //************************************************************************************************************************************************
 //            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
 
@@ -254,28 +236,12 @@ void Manager::on_saveSceneButton_clicked()
     std::string cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene.png";
     executeCommand(cmd_convert);
 
-      // Test to adjust picture dimention while retaining scale
-//    int w_coeff = vCanvas->width() / 480;
-//    int h_coeff = vCanvas->height() / 270;
-//    std::cout << "Width: " << vCanvas->width() << "\tHeight: " << vCanvas->height() << "\nW_C: " << w_coeff << "\tH_C: " << h_coeff << std::endl;
-//    const QImage renderImage = QImage("Results/Scene.png").scaled(vCanvas->width() / w_coeff, vCanvas->height() / h_coeff);
-//    const QImage renderImage = QImage("Results/Scene.png").scaled(vCanvas->width() / 4, vCanvas->height() / 4);
+
+    // Set image in window
     const QImage renderImage = QImage("Results/Scene.png").scaled(480, 270);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
 
-
-    /// TEST ///
-    // Create full canvas size image
-//    scene.getSensor().setFilmWidth(vCanvas->width());
-//    scene.getSensor().setFilmHeight(vCanvas->height());
-//    setupAndGenerateScene(scene, vCanvas);
-
-//    cmd_render = (std::string)MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml";
-//    executeCommand(cmd_render);
-
-//    cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene_FS.png";
-//    executeCommand(cmd_convert);
 #endif
 #endif
 }
@@ -325,22 +291,25 @@ void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
     float cx = camera.x();
     float cy = camera.y();
     float cz = camera.z();
-//    std::cout << "\nCamera Origin: " << cx << ", " << cy << ", " << cz << std::endl;
-      std::cout << "\nCamera Origin: " << vCanvas->cameraPosition() << std::endl;
+    std::cout << "\nCamera Origin: " << cx << ", " << cy << ", " << cz << std::endl;
+    std::cout << "\nCamera Origin [f]: " << vCanvas->cameraPosition() << std::endl;
 //    scene.getSensor().setTransformOrigin({cx, cy, cz});
-    float newZ = vCanvas->cameraSceneRadius() * 3;
-    scene.getSensor().setTransformOrigin({0, 0, newZ});
+
+    float c = ui->coeffLineEdit->text().toFloat();
+    float newZ = vCanvas->cameraSceneRadius() * c;
+
+//    scene.getSensor().setTransformOrigin({0, 0, 1*c});
 
     // Camera Target
-    Eigen::Vector3d target = vCanvas->cameraPosition() + vCanvas->cameraViewDirection();
-    float tx = target.x();
-    float ty = target.y();
-    float tz = target.z();
+//    Eigen::Vector3d target = vCanvas->cameraPosition() + vCanvas->cameraViewDirection();
+//    float tx = target.x();
+//    float ty = target.y();
+//    float tz = target.z();
 //    std::cout << "\nCamera Target: " << tx << ", " << ty << ", " << tz << std::endl;
-      scene.getSensor().setTransformTarget({tx, ty, tz});
+//      scene.getSensor().setTransformTarget({tx, ty, tz});
 
     // ModelView Matrix
-    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
+    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix().transpose();
     GLdouble* matrix = modelViewMatrix.data();
 
     std::string mvm = "";
@@ -366,6 +335,8 @@ void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
     std::cout << matrix[15];
     mvm += std::to_string(matrix[15]);
 
+//    scene.getSensor().setTransformOrigin({0, 0, float(std::abs(matrix[14]))});
+
     // Set the MVM to be used in the XML file
     scene.getSensor().setModelViewMatrix(mvm);
 
@@ -381,7 +352,7 @@ void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
     std::cout << "\n\n\n" << std::endl;
 
     //**********************
-    nvl::Matrix44d modelViewMatrixT = vCanvas->cameraModelViewMatrix().transpose();
+    nvl::Matrix44d modelViewMatrixT = vCanvas->cameraModelViewMatrix();
     GLdouble* mvmT = modelViewMatrixT.data();
 
 

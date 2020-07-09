@@ -198,8 +198,8 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
 
         dSensorSampler.InsertEndChild(dSensorSamplerSC);
 
-        dSensorTransform.InsertEndChild(dSensorTransformLA);
         dSensorTransform.InsertEndChild(dSensorTransformMatrix);
+        dSensorTransform.InsertEndChild(dSensorTransformLA);
 //        dSensorTransform.InsertEndChild(dSensorTransformRotX);
 //        dSensorTransform.InsertEndChild(dSensorTransformRotY);
 //        dSensorTransform.InsertEndChild(dSensorTransformRotZ);
