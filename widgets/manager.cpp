@@ -6,10 +6,14 @@
 #include <nvl/utilities/colorize.h>
 
 #include <nvl/models/mesh_transformations.h>
+#include <nvl/models/mesh_normals.h>
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include <iostream>
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 Manager::Manager(
         nvl::Canvas* canvas,
@@ -199,6 +203,7 @@ void Manager::on_saveSceneButton_clicked()
         if (meshDrawer != nullptr) {
             Mesh meshCopy = *meshDrawer->mesh();
             nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
+            nvl::meshUpdateVertexNormals(meshCopy);
             nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
 
             //************************************************************************************************************************************************
@@ -225,25 +230,19 @@ void Manager::on_saveSceneButton_clicked()
 //    successMsg.exec();
 
 
-    //* SYSTEM CALLS + Set Image
-#ifdef RESULTS_FOLDER
-#ifdef MITSUBA_PATH
-    std::string cmd_render = (std::string)MITSUBA_PATH + " " + RESULTS_FOLDER + "/Scene.xml";
+    std::string cmd_render = "\"" + std::string(TOSTRING(MITSUBA_PATH)) + "\" \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.xml\"";
     executeCommand(cmd_render);
 
 
     // Convert .EXR to .PNG
-    std::string cmd_convert = (std::string)"convert " + RESULTS_FOLDER + "/Scene.exr -colorspace RGB -colorspace sRGB " + RESULTS_FOLDER + "/Scene.png";
+    std::string cmd_convert = "convert \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.exr\" -colorspace RGB -colorspace sRGB \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.png\"";
     executeCommand(cmd_convert);
 
 
     // Set image in window
-    const QImage renderImage = QImage("Results/Scene.png").scaled(480, 270);
+    const QImage renderImage = QImage("Results/Scene.png").scaledToWidth(300);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
-
-#endif
-#endif
 }
 
 void Manager::on_materialGoldRadio_clicked()
@@ -277,118 +276,27 @@ void Manager::on_materialMirrorRadio_clicked()
 void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
 {
     scene.setNumberOfShapesPresent(vCanvas->drawableNumber());
-//    scene.getSensor().setFilmWidth(vCanvas->width());
-//    scene.getSensor().setFilmHeight(vCanvas->height());
+    scene.getSensor().setFilmWidth(vCanvas->screenWidth());
+    scene.getSensor().setFilmHeight(vCanvas->screenHeight());
 
-    Eigen::Vector3d sceneCenter = vCanvas->cameraSceneCenter();
-    std::cout << "Scene Center: " << sceneCenter << "\n\n" << std::endl;
+    //ModelView Matrix
+    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
+    nvl::Matrix44d inverseModelViewMatrix = modelViewMatrix.inverse();
 
-    std::cout << "\nCamera Orientation: " << vCanvas->cameraOrientation().x() << "\n" << vCanvas->cameraOrientation().y() << "\n" <<vCanvas->cameraOrientation().z() << "\n" <<vCanvas->cameraOrientation().w() << "\n" << std::endl;
+    std::string inverseModelViewMatrixString = "";
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (i > 0 || j > 0) {
+                inverseModelViewMatrixString += ", ";
+            }
 
-    // Camera Origin
-//    vCanvas->setCameraPosition(nvl::Point3d(0,0,0));
-    Eigen::Vector3d camera = vCanvas->cameraPosition();
-    float cx = camera.x();
-    float cy = camera.y();
-    float cz = camera.z();
-    std::cout << "\nCamera Origin: " << cx << ", " << cy << ", " << cz << std::endl;
-    std::cout << "\nCamera Origin [f]: " << vCanvas->cameraPosition() << std::endl;
-//    scene.getSensor().setTransformOrigin({cx, cy, cz});
+            inverseModelViewMatrixString += std::to_string(inverseModelViewMatrix(j,i)); //Mitsuba uses column-major matrices
+        }
+    }
 
-    float c = ui->coeffLineEdit->text().toFloat();
-    float newZ = vCanvas->cameraSceneRadius() * c;
-
-//    scene.getSensor().setTransformOrigin({0, 0, 1*c});
-
-    // Camera Target
-//    Eigen::Vector3d target = vCanvas->cameraPosition() + vCanvas->cameraViewDirection();
-//    float tx = target.x();
-//    float ty = target.y();
-//    float tz = target.z();
-//    std::cout << "\nCamera Target: " << tx << ", " << ty << ", " << tz << std::endl;
-//      scene.getSensor().setTransformTarget({tx, ty, tz});
-
-    // ModelView Matrix
-    nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix().transpose();
-    GLdouble* matrix = modelViewMatrix.data();
-
-    std::string mvm = "";
-
-
-    nvl::Matrix44d viewProjectionMatrix = vCanvas->cameraModelViewProjectionMatrix();
-    GLdouble* viewProjMatrix = viewProjectionMatrix.data();
-
-
-    nvl::Matrix44d projectionMatrix = vCanvas->cameraProjectionMatrix();
-    GLdouble* projMatrix = projectionMatrix.data();
-
-
-   std::cout << "\nCamera Direction: " << vCanvas->cameraViewDirection() << std::endl;
-   std::cout << "\nScene Radius: " << vCanvas->cameraSceneRadius() << std::endl;
-   std::cout << "\nScene Center: " << vCanvas->cameraSceneCenter() << std::endl;
-
-    std::cout << "\n\nCamera model view matrix: ";
-    for (int i = 0; i < 15; i++) {
-           std::cout << matrix[i] << " ";
-           mvm += std::to_string(matrix[i]) + ", ";
-       }
-    std::cout << matrix[15];
-    mvm += std::to_string(matrix[15]);
-
-//    scene.getSensor().setTransformOrigin({0, 0, float(std::abs(matrix[14]))});
-
-    // Set the MVM to be used in the XML file
-    scene.getSensor().setModelViewMatrix(mvm);
-
-    std::cout << "\n\nCamera model View Projection matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << viewProjMatrix[i] << " ";
-       }
-
-    std::cout << "\n\nCamera Projection matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << projMatrix[i] << " ";
-       }
-    std::cout << "\n\n\n" << std::endl;
-
-    //**********************
-    nvl::Matrix44d modelViewMatrixT = vCanvas->cameraModelViewMatrix();
-    GLdouble* mvmT = modelViewMatrixT.data();
-
-
-    nvl::Matrix44d viewProjectionMatrixT = vCanvas->cameraModelViewProjectionMatrix().transpose();
-    GLdouble* vpmT = viewProjectionMatrixT.data();
-
-
-    nvl::Matrix44d projectionMatrixT = vCanvas->cameraProjectionMatrix().transpose();
-    GLdouble* pmT = projectionMatrixT.data();
-
-
-    std::cout << "\n\nTransposed Camera model view matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << mvmT[i] << " ";
-       }
-
-    // Set the MVM to be used in the XML file
-    scene.getSensor().setModelViewMatrix(mvm);
-
-    std::cout << "\n\nTransposed Camera model View Projection matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << vpmT[i] << " ";
-       }
-
-    std::cout << "\n\nTransposed Camera Projection matrix: ";
-    for (int i = 0; i < 16; i++) {
-           std::cout << pmT[i] << " ";
-       }
-    std::cout << "\n\n\n" << std::endl;
-    //**********************
-
-
-
+    scene.getSensor().setTransformationMatrix(inverseModelViewMatrixString);
 
     ms::generateScene(scene, matToMeshMap);
-
 }
 
 void Manager::addToMap(ms::Mats mat, int index)
@@ -421,7 +329,7 @@ int Manager::findDrawableIndex()
 {
     int selectedIndex = -1;
 
-    for(int i = 0; i < vCanvas->drawableNumber(); i++)
+    for(Index i = 0; i < vCanvas->drawableNumber(); i++)
     {
         if(vDrawableListWidget->isDrawableSelected(i))
         {

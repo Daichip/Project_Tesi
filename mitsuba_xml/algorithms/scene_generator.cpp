@@ -1,7 +1,7 @@
 #include "mitsuba_xml/algorithms/scene_generator.h"
 
 //***********************************************************************************************
-void eigenMatToString(std::ostringstream& vts, Eigen::Vector3d& mat)
+void eigenMatToString(std::ostringstream& vts, const Eigen::Vector3d& mat)
 {
     std::vector<float> vec;
     vec.push_back(mat[0]);
@@ -22,7 +22,7 @@ void eigenMatToString(std::ostringstream& vts, Eigen::Vector3d& mat)
 //      std::cout << vts.str() << std::endl;
 }
 
-void arrayToString(std::ostringstream& vts, std::array<float, 3> arr)
+void arrayToString(std::ostringstream& vts, const std::array<float, 3>& arr)
 {
     std::vector<float> vec;
     vec.push_back(arr[0]);
@@ -111,7 +111,7 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     dSensorTransformLA.SetAttribute("up", vts.str());
 
     TiXmlElement dSensorTransformMatrix("matrix");
-    dSensorTransformMatrix.SetAttribute("value", scene.getSensor().getModelViewMatrix());
+    dSensorTransformMatrix.SetAttribute("value", scene.getSensor().getTransformationMatrix());
 
 
     // Sensor - Sampler
@@ -175,81 +175,81 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
 
     for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
     {
-       xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
+        xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
     }
 
-//    if(map.begin() != map.end()) {
-//        // For each mesh in the map, we need to check its material and generate the correct XML
-//        for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
-//        {
-//           xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
-//        }
+    //    if(map.begin() != map.end()) {
+    //        // For each mesh in the map, we need to check its material and generate the correct XML
+    //        for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
+    //        {
+    //           xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
+    //        }
 
-//    } else{
-//        for(int i = 0; i < scene.getNumberOfShapesPresent(); i++)
-//        {
-//            xmlShapes.push_back(ms::generateShape(i, 0));
-//        }
-//    }
+    //    } else{
+    //        for(int i = 0; i < scene.getNumberOfShapesPresent(); i++)
+    //        {
+    //            xmlShapes.push_back(ms::generateShape(i, 0));
+    //        }
+    //    }
 
     // Step 4: add all elements
-        doc.InsertEndChild(decl); // Add the declaration to the document
+    doc.InsertEndChild(decl); // Add the declaration to the document
 
 
-        dSensorSampler.InsertEndChild(dSensorSamplerSC);
+    dSensorSampler.InsertEndChild(dSensorSamplerSC);
 
-        dSensorTransform.InsertEndChild(dSensorTransformMatrix);
-        dSensorTransform.InsertEndChild(dSensorTransformLA);
-//        dSensorTransform.InsertEndChild(dSensorTransformRotX);
-//        dSensorTransform.InsertEndChild(dSensorTransformRotY);
-//        dSensorTransform.InsertEndChild(dSensorTransformRotZ);
+    dSensorTransform.InsertEndChild(dSensorTransformLA);
+    dSensorTransform.InsertEndChild(dSensorTransformMatrix);
+    //        dSensorTransform.InsertEndChild(dSensorTransformRotX);
+    //        dSensorTransform.InsertEndChild(dSensorTransformRotY);
+    //        dSensorTransform.InsertEndChild(dSensorTransformRotZ);
 
 
-        dSensorFilm.InsertEndChild(dSensorFilmH);
-        dSensorFilm.InsertEndChild(dSensorFilmW);
-        dSensorFilm.InsertEndChild(dSensorFilmFilter);
+    dSensorFilm.InsertEndChild(dSensorFilmH);
+    dSensorFilm.InsertEndChild(dSensorFilmW);
+    dSensorFilm.InsertEndChild(dSensorFilmFilter);
 
     //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticGGXDist);
     //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticAlpha);
     //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
     //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
 
-//        dSensor.InsertEndChild(dSensorFarClip);
-//        dSensor.InsertEndChild(dSensorNearClip);
-//        dSensor.InsertEndChild(dSensorFocusDistance);
-        dSensor.InsertEndChild(dSensorFov);
-//        dSensor.InsertEndChild(dSensorFovAxis);
-        dSensor.InsertEndChild(dSensorTransform);
-        dSensor.InsertEndChild(dSensorFilm);
-        dSensor.InsertEndChild(dSensorSampler);
+    //        dSensor.InsertEndChild(dSensorFarClip);
+    //        dSensor.InsertEndChild(dSensorNearClip);
+    //        dSensor.InsertEndChild(dSensorFocusDistance);
+    dSensor.InsertEndChild(dSensorFov);
+    //        dSensor.InsertEndChild(dSensorFovAxis);
+    dSensor.InsertEndChild(dSensorTransform);
+    dSensor.InsertEndChild(dSensorFilm);
+    dSensor.InsertEndChild(dSensorSampler);
 
 
-//        dEmitter.InsertEndChild(dEmitterSpectrum);
-//        dShapeEmit.InsertEndChild(dShapeEPoint);
-//        dShapeEmit.InsertEndChild(dEmitter);
+    //        dEmitter.InsertEndChild(dEmitterSpectrum);
+    //        dShapeEmit.InsertEndChild(dShapeEPoint);
+    //        dShapeEmit.InsertEndChild(dEmitter);
 
-//        dShape.InsertEndChild(dShapePoint);
-//        dShape.InsertEndChild(dBsdfRef);
+    //        dShape.InsertEndChild(dShapePoint);
+    //        dShape.InsertEndChild(dBsdfRef);
 
     //    dScene.InsertEndChild(dBsdfRoughPlastic);
 
-        dScene.InsertEndChild(dSensor);
-        dScene.InsertEndChild(dIntegrator);
-//        dScene.InsertEndChild(dShapeEmit);
-        dScene.InsertEndChild(dEnvmap);
-//        dScene.InsertEndChild(dShape);
-        for(TiXmlElement shape : xmlShapes)
-        {
-            dScene.InsertEndChild(shape);
-        }
+    dScene.InsertEndChild(dSensor);
+    dScene.InsertEndChild(dIntegrator);
+    //        dScene.InsertEndChild(dShapeEmit);
+    dScene.InsertEndChild(dEnvmap);
+    //        dScene.InsertEndChild(dShape);
+    for(TiXmlElement shape : xmlShapes)
+    {
+        dScene.InsertEndChild(shape);
+    }
 
-        doc.InsertEndChild(dScene);
+    doc.InsertEndChild(dScene);
 
 
     // Step 5: save the XML document
 
     //    doc.SaveFile("$HOME/Results/" + filename);
-        doc.SaveFile("Results/Scene.xml");
+    doc.SaveFile("Results/Scene.xml");
 
 }
 
@@ -274,7 +274,7 @@ TiXmlElement ms::generateShape(int meshIndex, int matIndex)
 
     TiXmlElement dFilename("string");
     dFilename.SetAttribute("name", "filename");
-    dFilename.SetAttribute("value", "/home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results/" + std::to_string(meshIndex) + ".obj");
+    dFilename.SetAttribute("value", std::to_string(meshIndex) + ".obj");
     dShape.InsertEndChild(dFilename);
 
     dShape.InsertEndChild(ms::generateBsdf(matIndex));

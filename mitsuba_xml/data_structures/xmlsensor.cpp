@@ -15,8 +15,8 @@ ms::XMLSensor::XMLSensor():
     mSamplerName("independent"),
     mSampleCount(512),
     mFilmName("hdrfilm"),
-    mFilmHeight(270),
-    mFilmWidth(480),
+    mFilmHeight(1080),
+    mFilmWidth(1920),
     mFilterName("gaussian")
 {
     std::cout << "Target: " << getTransformTarget()[0] << ", " << getTransformTarget()[1] <<  ", " << getTransformTarget()[2] << std::endl;
@@ -26,9 +26,11 @@ ms::XMLSensor::XMLSensor():
 
 
 
-ms::XMLSensor::XMLSensor(float nearClipValue, float farClipValue, float focusDistance, float fov, std::string &fovAxis, std::string modelViewMatrix, std::string &sensorName, std::string &transformName,
-                         std::array<float, 3> &transformTarget, std::array<float, 3> &transformOrigin, std::array<float, 3> &transformUp, std::array<float, 3> &transformRot,
-                         std::string &samplerName, int sampleCount, std::string &filmName, int filmHeight, int filmWidth, std::string &filterName):
+ms::XMLSensor::XMLSensor(const float nearClipValue, const float farClipValue, const float focusDistance, const float fov,
+                         const std::string &fovAxis, const std::string &transformationMatrix, const std::string &sensorName, const std::string &transformName,
+                         const std::array<float, 3> &transformTarget, const std::array<float, 3> &transformOrigin, const std::array<float, 3> &transformUp, const std::array<float, 3> &transformRot,
+                         const std::string &samplerName, const int sampleCount, const std::string &filmName,
+                         const int filmHeight, const int filmWidth, const std::string &filterName) :
     mNearClipValue(nearClipValue),
     mFarClipValue(farClipValue),
     mFocusDistance(focusDistance),
@@ -40,7 +42,7 @@ ms::XMLSensor::XMLSensor(float nearClipValue, float farClipValue, float focusDis
     mTransformOrigin(transformOrigin),
     mTransformUp(transformUp),
     mTransformRot(transformRot),
-    mModelViewMatrix(modelViewMatrix),
+    mTransformationMatrix(transformationMatrix),
     mSamplerName(samplerName),
     mSampleCount(sampleCount),
     mFilmName(filmName),

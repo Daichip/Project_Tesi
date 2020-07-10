@@ -1,14 +1,12 @@
 ############################ CONFIGURATION ############################
-# Paths
-MITSUBA_PATH = \\\"/home/dfara/mitsuba2/build/dist/mitsuba\\\"
-DEFINES += MITSUBA_PATH='$$MITSUBA_PATH'
 
-RESULTS_FOLDER = \\\"/home/dfara/build-Project_Tesi-Desktop_Qt_5_14_2_GCC_64bit-Debug/Results\\\"
-DEFINES += RESULTS_FOLDER='$$RESULTS_FOLDER'
+#Mitsuba path configuration
+MITSUBA_PATH = /opt/mitsuba2/build/dist/mitsuba
 
+#Result path configuration
+RESULTS_FOLDER = $$OUT_PWD/Results
 
-
-#Libraries paths
+#Libraries path
 NUVOLIB_PATH = $$PWD/libs/nuvolib
 LIBIGL_PATH = $$PWD/libs/libigl
 TICPP_PATH = $$PWD/libs/ticpp
@@ -90,3 +88,6 @@ INCLUDEPATH += \
     $$TICPP_PATH
 
 LIBS += -L"$$TICPP_PATH/lib" -lticpp
+
+DEFINES += MITSUBA_PATH='$$MITSUBA_PATH'
+DEFINES += RESULTS_FOLDER='$$RESULTS_FOLDER'
