@@ -74,6 +74,8 @@ private slots:
 
 
 
+    void on_previewButton_clicked();
+
 private:
 
     MeshDrawer* getSelectedMeshDrawer();
@@ -86,8 +88,9 @@ private:
     // XML Methods
     void addToMap(ms::Mats mat, int index);
     int findDrawableIndex();
-    void setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas);
+    void setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas, bool renderFlag);
     void executeCommand(std::string command);
+    void executeRender(bool renderFlag);
 
     //Interface fields
     Ui::Manager *ui;

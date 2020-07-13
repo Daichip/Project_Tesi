@@ -189,60 +189,18 @@ void Manager::connectSignals()
 
 void Manager::on_saveSceneButton_clicked()
 {
-    try {
-        std::system("mkdir Results");
-    } catch(const std::system_error& e) {
-        std::cout << "Caught system_error with code " << e.code()
-                  << " meaning " << e.what() << '\n';
-    }
+    // The "true" boolean is used in the setupAndGenererateScene
+    // to define if we need a full render (film size = canvas size) or just a preview (480x270)
+    // In this case the user pressed the "Render" button, therefore it is a full render
+    executeRender(true);
+}
 
-    for (Index i = 0; i < vCanvas->drawableNumber(); ++i) {
-        Drawable* drawable = vCanvas->drawable(i);
-
-        MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
-        if (meshDrawer != nullptr) {
-            Mesh meshCopy = *meshDrawer->mesh();
-            nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
-            nvl::meshUpdateVertexNormals(meshCopy);
-            nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
-
-            //************************************************************************************************************************************************
-//            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
-
-//            std::cout << "Working with Mesh: " << meshDrawer->mesh() << "\n\n" << std::endl;
-            //************************************************************************************************************************************************
-            // Automatically associates an element (Green Plastic) to a mesh if not set already
-            auto findIT = matToMeshMap.find(i); // separated in order to avoid n checks
-            if(findIT == matToMeshMap.end())
-                addToMap(ms::Mats::PGreen, i);
-
-        }
-    }
-
-
-
-
-    ms::XMLScene scene;
-
-    setupAndGenerateScene(scene, vCanvas);
-//    QMessageBox successMsg;
-//    successMsg.setText("Scene Saved!\nPlease press \"OK\" and wait for the render to finish");
-//    successMsg.exec();
-
-
-    std::string cmd_render = "\"" + std::string(TOSTRING(MITSUBA_PATH)) + "\" \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.xml\"";
-    executeCommand(cmd_render);
-
-
-    // Convert .EXR to .PNG
-    std::string cmd_convert = "convert \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.exr\" -colorspace RGB -colorspace sRGB \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.png\"";
-    executeCommand(cmd_convert);
-
-
-    // Set image in window
-    const QImage renderImage = QImage("Results/Scene.png").scaledToWidth(300);
-    ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
-    std::cout << "Image set" << std::endl;
+void Manager::on_previewButton_clicked()
+{
+    // The "true" boolean is used in the setupAndGenererateScene
+    // to define if we need a full render (film size = canvas size) or just a preview (480x270)
+    // In this case the user pressed the "Preview" button, therefore it is a low-quality render
+    executeRender(false);
 }
 
 void Manager::on_materialGoldRadio_clicked()
@@ -273,16 +231,27 @@ void Manager::on_materialMirrorRadio_clicked()
 }
 
 
-void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas)
+void Manager::setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas, bool renderFlag)
 {
     scene.setNumberOfShapesPresent(vCanvas->drawableNumber());
-    scene.getSensor().setFilmWidth(vCanvas->screenWidth());
-    scene.getSensor().setFilmHeight(vCanvas->screenHeight());
+    if(renderFlag)
+    {
+        scene.getSensor().setFilmWidth(vCanvas->screenWidth());
+        scene.getSensor().setFilmHeight(vCanvas->screenHeight());
+    }
+    else
+    {
+        scene.getSensor().setFilmWidth(480);
+        scene.getSensor().setFilmHeight(270);
+    }
 
     //ModelView Matrix
     nvl::Matrix44d modelViewMatrix = vCanvas->cameraModelViewMatrix();
     nvl::Matrix44d inverseModelViewMatrix = modelViewMatrix.inverse();
 
+    // Since we're applying the transformation to the camera, we need to invert it
+    // in order to set it in the right position
+    // [Note: Mitsuba has the camera looking towards +z instead of -z. This is solved via the Lookat XML element]
     std::string inverseModelViewMatrixString = "";
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -304,8 +273,8 @@ void Manager::addToMap(ms::Mats mat, int index)
 
     // Look up if the mesh is present in the map [index]
     // If it is, then check if the mat is the same as the inserted one
-    // If it is, leave
-    // If it isn't update
+    //  If it is, leave
+    //  If it isn't update
     // If the mesh is not present in the map, add it
     if(matToMeshMap.find(index) != matToMeshMap.end())
     {
@@ -344,7 +313,6 @@ int Manager::findDrawableIndex()
 
 
 
-
 void Manager::executeCommand(std::string command)
 {
     try {
@@ -357,20 +325,63 @@ void Manager::executeCommand(std::string command)
 
 
 
+void Manager::executeRender(bool renderFlag)
+{
+    try {
+        std::system("mkdir Results");
+    } catch(const std::system_error& e) {
+        std::cout << "Caught system_error with code " << e.code()
+                  << " meaning " << e.what() << '\n';
+    }
+
+    for (Index i = 0; i < vCanvas->drawableNumber(); ++i) {
+        Drawable* drawable = vCanvas->drawable(i);
+
+        MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+        if (meshDrawer != nullptr) {
+            Mesh meshCopy = *meshDrawer->mesh();
+            nvl::meshApplyTransformation(meshCopy, meshDrawer->frame());
+            nvl::meshUpdateVertexNormals(meshCopy);
+            nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
+
+            //************************************************************************************************************************************************
+//            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
+
+//            std::cout << "Working with Mesh: " << meshDrawer->mesh() << "\n\n" << std::endl;
+            //************************************************************************************************************************************************
+
+            // Automatically associates a material (Green Plastic) to a mesh if not set already
+            auto findIT = matToMeshMap.find(i); // separated in order to avoid n checks
+            if(findIT == matToMeshMap.end())
+                addToMap(ms::Mats::PGreen, i);
+        }
+    }
 
 
 
 
+    ms::XMLScene scene;
+
+    setupAndGenerateScene(scene, vCanvas, renderFlag);
+//    QMessageBox successMsg;
+//    successMsg.setText("Scene Saved!\nPlease press \"OK\" and wait for the render to finish");
+//    successMsg.exec();
 
 
+    std::string cmd_render = "\"" + std::string(TOSTRING(MITSUBA_PATH)) + "\" \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.xml\"";
+    executeCommand(cmd_render);
 
 
+    // Convert .EXR to .PNG
+    std::string cmd_convert = "convert \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.exr\" -colorspace RGB -colorspace sRGB \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.png\"";
+    executeCommand(cmd_convert);
 
 
-
-
-
-
+    // Set image in window
+    const QImage renderImage = QImage("Results/Scene.png").scaledToWidth(300);
+    ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
+    std::cout << "Image set" << std::endl;
+}
 
 
 

@@ -1,7 +1,7 @@
 ############################ CONFIGURATION ############################
 
 #Mitsuba path configuration
-MITSUBA_PATH = /opt/mitsuba2/build/dist/mitsuba
+MITSUBA_PATH = /home/dfara/mitsuba2/build/dist/mitsuba
 
 #Result path configuration
 RESULTS_FOLDER = $$OUT_PWD/Results
