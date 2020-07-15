@@ -42,10 +42,6 @@ void arrayToString(std::ostringstream& vts, const std::array<float, 3>& arr)
 
 //      std::cout << vts.str() << std::endl;
 }
-
-
-
-
 //***********************************************************************************************
 
 void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
@@ -67,30 +63,10 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     TiXmlElement dSensor("sensor");
     dSensor.SetAttribute("type", scene.getSensor().getSensorType());
 
-    // Sensor - Far Clip
-    TiXmlElement dSensorFarClip("float");
-    dSensorFarClip.SetAttribute("name", "far_clip");
-    dSensorFarClip.SetAttribute("value", scene.getSensor().getFarClipValue());
-
-    // Sensor - Near Clip
-    TiXmlElement dSensorNearClip("float");
-    dSensorNearClip.SetAttribute("name", "near_clip");
-    dSensorNearClip.SetAttribute("value", scene.getSensor().getNearClipValue());
-
-    // Sensor - Focus Distance
-    TiXmlElement dSensorFocusDistance("float");
-    dSensorFocusDistance.SetAttribute("name", "focus_distance");
-    dSensorFocusDistance.SetAttribute("value", scene.getSensor().getFocusDistance());
-
     // Sensor - Fov
     TiXmlElement dSensorFov("float");
     dSensorFov.SetAttribute("name", "fov");
     dSensorFov.SetAttribute("value", scene.getSensor().getFov());
-
-    // Sensor - Fov Axis
-    TiXmlElement dSensorFovAxis("string");
-    dSensorFovAxis.SetAttribute("name", "fov_axis");
-    dSensorFovAxis.SetAttribute("value", scene.getSensor().getFovAxis());
 
     // Sensor - Transform
     TiXmlElement dSensorTransform("transform");
@@ -141,34 +117,15 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     TiXmlElement dSensorFilmFilter("rfilter");
     dSensorFilmFilter.SetAttribute("type", scene.getSensor().getFilterName());
 
-    // Step 2: Add the shapes
-//    // Shape - Sphere Light
-//    TiXmlElement dShapeEmit("shape");
-//    dShapeEmit.SetAttribute("type", "sphere");
+    // Step 2: Add the shapes and the lights
 
-//    // Shape - Sphere Light - Center
-//    TiXmlElement dShapeEPoint("point");
-//    dShapeEPoint.SetAttribute("name", "center");
-//    dShapeEPoint.SetAttribute("x", "0");
-//    dShapeEPoint.SetAttribute("y", "7");
-//    dShapeEPoint.SetAttribute("z", "0");
+    // Constant Light Emitter
+    TiXmlElement dCEmitter("emitter");
+    dCEmitter.SetAttribute("type", "constant");
 
-//    // Test - Sphere Light - Emitter
-//    TiXmlElement dEmitter("emitter");
-//    dEmitter.SetAttribute("type", "area");
-
-//    // Test - Sphere Light - Emitter - Spectrum
-//    TiXmlElement dEmitterSpectrum("spectrum");
-//    dEmitterSpectrum.SetAttribute("name", "radiance");
-//    dEmitterSpectrum.SetAttribute("value", "100");
-
-    // Envmap
-    TiXmlElement dEnvmap("emitter");
-    dEnvmap.SetAttribute("type", "envmap");
-    TiXmlElement dEnvmapProps("string");
-    dEnvmapProps.SetAttribute("name", "filename");
-    dEnvmapProps.SetAttribute("value", "envmap.exr");
-    dEnvmap.InsertEndChild(dEnvmapProps);
+    TiXmlElement dEmitterSpectrum("spectrum");
+    dEmitterSpectrum.SetAttribute("name", "radiance");
+    dEmitterSpectrum.SetAttribute("value", "0.7");
 
     // Other Shapes
     std::vector<TiXmlElement> xmlShapes;
@@ -178,66 +135,29 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
         xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
     }
 
-    //    if(map.begin() != map.end()) {
-    //        // For each mesh in the map, we need to check its material and generate the correct XML
-    //        for(std::map<int, ms::Mats>::iterator iter = map.begin(); iter != map.end(); ++iter)
-    //        {
-    //           xmlShapes.push_back(ms::generateShape(iter->first, iter->second));
-    //        }
-
-    //    } else{
-    //        for(int i = 0; i < scene.getNumberOfShapesPresent(); i++)
-    //        {
-    //            xmlShapes.push_back(ms::generateShape(i, 0));
-    //        }
-    //    }
-
-    // Step 4: add all elements
+    // Step 3: add all elements
     doc.InsertEndChild(decl); // Add the declaration to the document
-
 
     dSensorSampler.InsertEndChild(dSensorSamplerSC);
 
     dSensorTransform.InsertEndChild(dSensorTransformLA);
     dSensorTransform.InsertEndChild(dSensorTransformMatrix);
-    //        dSensorTransform.InsertEndChild(dSensorTransformRotX);
-    //        dSensorTransform.InsertEndChild(dSensorTransformRotY);
-    //        dSensorTransform.InsertEndChild(dSensorTransformRotZ);
-
 
     dSensorFilm.InsertEndChild(dSensorFilmH);
     dSensorFilm.InsertEndChild(dSensorFilmW);
     dSensorFilm.InsertEndChild(dSensorFilmFilter);
 
-    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticGGXDist);
-    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticAlpha);
-    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticIor);
-    //    dBsdfRoughPlastic.InsertEndChild(dBsdfRoughPlasticRgb);
-
-    //        dSensor.InsertEndChild(dSensorFarClip);
-    //        dSensor.InsertEndChild(dSensorNearClip);
-    //        dSensor.InsertEndChild(dSensorFocusDistance);
     dSensor.InsertEndChild(dSensorFov);
-    //        dSensor.InsertEndChild(dSensorFovAxis);
     dSensor.InsertEndChild(dSensorTransform);
     dSensor.InsertEndChild(dSensorFilm);
     dSensor.InsertEndChild(dSensorSampler);
 
-
-    //        dEmitter.InsertEndChild(dEmitterSpectrum);
-    //        dShapeEmit.InsertEndChild(dShapeEPoint);
-    //        dShapeEmit.InsertEndChild(dEmitter);
-
-    //        dShape.InsertEndChild(dShapePoint);
-    //        dShape.InsertEndChild(dBsdfRef);
-
-    //    dScene.InsertEndChild(dBsdfRoughPlastic);
+    dCEmitter.InsertEndChild(dEmitterSpectrum);
 
     dScene.InsertEndChild(dSensor);
     dScene.InsertEndChild(dIntegrator);
-    //        dScene.InsertEndChild(dShapeEmit);
-    dScene.InsertEndChild(dEnvmap);
-    //        dScene.InsertEndChild(dShape);
+    dScene.InsertEndChild(dCEmitter);
+
     for(TiXmlElement shape : xmlShapes)
     {
         dScene.InsertEndChild(shape);
@@ -246,9 +166,7 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
     doc.InsertEndChild(dScene);
 
 
-    // Step 5: save the XML document
-
-    //    doc.SaveFile("$HOME/Results/" + filename);
+    // Step 4: save the XML document
     doc.SaveFile("Results/Scene.xml");
 
 }
