@@ -125,7 +125,7 @@ void ms::generateScene(ms::XMLScene& scene, std::map<int, ms::Mats>& map)
 
     TiXmlElement dEmitterSpectrum("spectrum");
     dEmitterSpectrum.SetAttribute("name", "radiance");
-    dEmitterSpectrum.SetAttribute("value", "0.7");
+    dEmitterSpectrum.SetAttribute("value", "1.0");
 
     // Other Shapes
     std::vector<TiXmlElement> xmlShapes;

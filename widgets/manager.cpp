@@ -381,6 +381,51 @@ void Manager::executeRender(bool renderFlag)
     const QImage renderImage = QImage("Results/Scene.png").scaledToWidth(300);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
+
+
+
+    /**
+        ray_mesh_intersect¶
+        ray_mesh_intersect(source: array, dir: array, v: array, f: array) -> List[Tuple[int, int, float, float, float]]
+
+        Shoot a ray against a mesh (V,F) and collect the first hit.
+
+        Parameters
+            source 3-vector origin of ray
+            dir 3-vector direction of ray
+            V #V by 3 list of mesh vertex positions
+            F #F by 3 list of mesh face indices into V
+        Returns
+            hits sorted list of hits: id, gid, u, v, t
+
+      **/
+
+    // Compute the ray-mesh intersections.
+    // The rays should
+    Eigen::Vector3d rayOrig(0, 0, 100);
+    Eigen::Vector3d rayDir = vCanvas->cameraViewDirection();
+    std::cout << "View Dir" << rayDir << std::endl;
+
+    if(vCanvas->drawables().size() > 0)
+    {
+        Drawable* drawable = vCanvas->drawable(0);
+        MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+
+        if (meshDrawer != nullptr) {
+            Mesh meshCopy = *meshDrawer->mesh();
+
+            std::vector<igl::Hit> hits;
+            Eigen::MatrixXd V;
+            Eigen::MatrixXi F;
+
+            nvl::convertMeshToEigenMesh(meshCopy, V, F);
+
+            igl::ray_mesh_intersect(rayOrig, rayDir, V, F, hits);
+
+            std::cout << "Hits: " << hits.size() << std::endl;
+        }
+    }
+
 }
 
 

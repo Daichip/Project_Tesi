@@ -13,17 +13,19 @@
 #include <nvl/viewer/widgets/drawable_list_widget.h>
 #include <nvl/viewer/widgets/skeletonjoint_list_widget.h>
 #include <nvl/viewer/widgets/model_loader_widget.h>
-
 #include <nvl/models/mesh_transformations.h>
+#include <nvl/models/mesh_eigen_convert.h>
 
 #include <nvl/models/model.h>
 #include <nvl/models/meshes.h>
 
-#include "mitsuba_xml/algorithms/scene_generator.h"
-#include "mitsuba_xml/data_structures/xmlscene.h"
-#include "mitsuba_xml/data_structures/xmlintegrator.h"
-#include "mitsuba_xml/data_structures/xmlsensor.h"
-#include "mitsuba_xml/data_structures/xmlshape.h"
+#include <mitsuba_xml/algorithms/scene_generator.h>
+#include <mitsuba_xml/data_structures/xmlscene.h>
+#include <mitsuba_xml/data_structures/xmlintegrator.h>
+#include <mitsuba_xml/data_structures/xmlsensor.h>
+#include <mitsuba_xml/data_structures/xmlshape.h>
+
+#include <igl/ray_mesh_intersect.h>
 
 
 namespace Ui {
