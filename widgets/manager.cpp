@@ -385,7 +385,7 @@ void Manager::executeRender(bool renderFlag)
 
 
     /**
-        ray_mesh_intersect¶
+        ray_mesh_intersect
         ray_mesh_intersect(source: array, dir: array, v: array, f: array) -> List[Tuple[int, int, float, float, float]]
 
         Shoot a ray against a mesh (V,F) and collect the first hit.
@@ -400,31 +400,126 @@ void Manager::executeRender(bool renderFlag)
 
       **/
 
-    // Compute the ray-mesh intersections.
-    // The rays should
-    Eigen::Vector3d rayOrig(0, 0, 100);
-    Eigen::Vector3d rayDir = vCanvas->cameraViewDirection();
-    std::cout << "View Dir" << rayDir << std::endl;
-
     if(vCanvas->drawables().size() > 0)
     {
-        Drawable* drawable = vCanvas->drawable(0);
-        MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+        std::cout << "IF SUCCESS" << std::endl;
+        int mirrorIndex;
+        std::vector<int> meshIndices;
+        auto matMeshIt = matToMeshMap.begin();
 
-        if (meshDrawer != nullptr) {
-            Mesh meshCopy = *meshDrawer->mesh();
+        while(matMeshIt != matToMeshMap.end())
+        {
+            if(matMeshIt->second == ms::Mirror)
+                mirrorIndex = matMeshIt->first;
+            else
+                meshIndices.push_back(matMeshIt->first);
 
-            std::vector<igl::Hit> hits;
-            Eigen::MatrixXd V;
-            Eigen::MatrixXi F;
-
-            nvl::convertMeshToEigenMesh(meshCopy, V, F);
-
-            igl::ray_mesh_intersect(rayOrig, rayDir, V, F, hits);
-
-            std::cout << "Hits: " << hits.size() << std::endl;
+            matMeshIt++;
         }
+
+        std::cout << "While Completed\nMirror Index: " << mirrorIndex << "\nMeshIndices.size: " << meshIndices.size() << std::endl;
+
+        if(mirrorIndex >= 0 && mirrorIndex < vCanvas->drawables().size())
+        {
+            // get mirror vertices and faces
+            Eigen::MatrixXd mirrorV;
+            Eigen::MatrixXi mirrorF;
+            Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(mirrorIndex))->mesh());
+            nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
+
+            // Do the same for all the other meshes
+            for(int i = 0; i < meshIndices.size(); i++)
+            {
+                Eigen::MatrixXd meshV;
+                Eigen::MatrixXi meshF;
+                Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(meshIndices[i]))->mesh());
+                nvl::convertMeshToEigenMesh(mirrorMesh, meshV, meshF);
+
+                std::cout << "Inside the For, did the conversion" << std::endl;
+
+                std::vector<igl::Hit> hits;
+                std::vector<Eigen::Vector3d> visibleVertices;
+                std::vector<Eigen::Vector3d> rayMirrorIntersections;
+
+                std::cout << "Calling MDF" << std::endl;
+
+//                mdf::findIntersectionVertices(meshV, meshF, visibleVertices, vCanvas->cameraPosition());
+
+//                std::cout << "Mesh Intesections: " << visibleVertices.size() << std::endl;
+
+//                for(int j = 0; i < visibleVertices.size(); j++)
+//                {
+//                    mdf::findIntersectionVertices(mirrorV, mirrorF, rayMirrorIntersections, visibleVertices[j], vCanvas->cameraPosition());
+//                }
+
+//                std::cout << "Mirror Intesections: " << rayMirrorIntersections.size() << std::endl;
+
+                mdf::findMirrorIntersections(meshV, meshF, mirrorV, mirrorF, rayMirrorIntersections, vCanvas->cameraPosition());
+
+            }
+        }
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    // Compute the ray-mesh intersections.
+//    // The rays should
+//    Eigen::Vector3d rayOrig(0, 0, 100);
+//    Eigen::Vector3d rayDir = vCanvas->cameraViewDirection();
+//    std::cout << "View Dir" << rayDir << std::endl;
+
+//    if(vCanvas->drawables().size() > 0)
+//    {
+//        Drawable* drawable = vCanvas->drawable(0);
+//        MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+
+//        if (meshDrawer != nullptr) {
+//            Mesh meshCopy = *meshDrawer->mesh();
+
+//            std::vector<igl::Hit> hits;
+//            Eigen::MatrixXd V;
+//            Eigen::MatrixXi F;
+
+//            nvl::convertMeshToEigenMesh(meshCopy, V, F);
+//            igl::ray_mesh_intersect(rayOrig, rayDir, V, F, hits);
+
+////            std::cout << "VERTICES MATRIX:\n" << V << std::endl;
+////            std::cout << "FACES MATRIX:\n" << F << std::endl;
+
+//            std::cout << "Hits: " << hits.size() << std::endl;
+//            std::cout << "Hits[0] -> Distance from intersection, Barycentric Coordinates: " << hits[0].t << ", " << hits[0].u << ", " << hits[0].v << std::endl;
+
+//            std::vector<Eigen::Vector3d> visibleVerts;
+//            mdf::findVisibileVerts(V, F, visibleVerts, vCanvas->cameraPosition());
+//        }
+//    }
 
 }
 

@@ -63,6 +63,7 @@ include($$NUVOLIB_PATH/nuvolib/nuvolib.pri)
 #Project files
 SOURCES += \
     main.cpp \
+    mesh_deformation/mesh_deform_utils.cpp \
     mitsuba_xml/algorithms/scene_generator.cpp \
     mitsuba_xml/data_structures/xmlbsdf.cpp \
     mitsuba_xml/data_structures/xmlintegrator.cpp \
@@ -72,6 +73,7 @@ SOURCES += \
     widgets/manager.cpp
 
 HEADERS += \
+    mesh_deformation/mesh_deform_utils.h \
     mitsuba_xml/algorithms/scene_generator.h \
     mitsuba_xml/data_structures/xmlbsdf.h \
     mitsuba_xml/data_structures/xmlintegrator.h \

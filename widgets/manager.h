@@ -25,6 +25,8 @@
 #include <mitsuba_xml/data_structures/xmlsensor.h>
 #include <mitsuba_xml/data_structures/xmlshape.h>
 
+#include <mesh_deformation/mesh_deform_utils.h>
+
 #include <igl/ray_mesh_intersect.h>
 
 
