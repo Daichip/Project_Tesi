@@ -369,12 +369,12 @@ void Manager::executeRender(bool renderFlag)
 
 
     std::string cmd_render = "\"" + std::string(TOSTRING(MITSUBA_PATH)) + "\" \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.xml\"";
-    executeCommand(cmd_render);
+//    executeCommand(cmd_render);
 
 
     // Convert .EXR to .PNG
     std::string cmd_convert = "convert \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.exr\" -colorspace RGB -colorspace sRGB \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.png\"";
-    executeCommand(cmd_convert);
+//    executeCommand(cmd_convert);
 
 
     // Set image in window
@@ -452,13 +452,16 @@ void Manager::executeRender(bool renderFlag)
 //                    mdf::findIntersectionVertices(mirrorV, mirrorF, rayMirrorIntersections, visibleVertices[j], vCanvas->cameraPosition());
 //                }
 
-//                std::cout << "Mirror Intesections: " << rayMirrorIntersections.size() << std::endl;
 
-                mdf::findMirrorIntersections(meshV, meshF, mirrorV, mirrorF, rayMirrorIntersections, vCanvas->cameraPosition());
 
+                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF, rayMirrorIntersections, vCanvas->cameraPosition());
+                std::cout << "Mirror Intesections: " << rayMirrorIntersections.size() << std::endl;
+
+                for(auto rm : rayMirrorIntersections)
+                    std::cout << rm << std::endl;
             }
         }
-
+        std::cout << "\n\nEnd" << std::endl;
     }
 
 

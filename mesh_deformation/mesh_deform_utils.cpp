@@ -243,9 +243,31 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXi& m
 }
 
 
+void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& mirrorVerts, Eigen::MatrixXi& mirrorFaces,
+                                       std::vector<Eigen::Vector3d>& toBeReturned, Eigen::Vector3d rayOrig)
+{
+    for(int v = 0; v < meshVerts.rows(); v++)
+    {
+        Eigen::Vector3d vert = meshVerts.row(v).template cast<double>();
+//        std::cout << "\n------------------------------------------------------------------\nMesh Vert: \n" << vert.x() << ", " << vert.y() << ", " << vert.z() <<  std::endl;
 
+        Eigen::Vector3d rayDir = (vert - rayOrig).normalized(); // Direction of the ray going from the camera to the vertex (same for the mirror)
+//        std::cout << "Ray Direction:\n" << rayDir.x() << ", " << rayDir.y() << ", " << rayDir.z() << std::endl;
 
+        std::vector<igl::Hit> vertHits; // vector of vertices in the MESH that are visible from the camera
+        std::vector<igl::Hit> mirrorHits; // For each visible vertex, find the corresponding point on the Mirror
 
+        // If the ray hits something
+        // igl::ray_mesh_intersect(rayOrig, rayDir, V, F, hits);
+        if(igl::ray_mesh_intersect(rayOrig, rayDir, mirrorVerts, mirrorFaces, mirrorHits))
+        {
+            Eigen::Vector3d vmFound = rayOrig + mirrorHits[0].t * rayDir;
+            std::cout << "\nHits[0] -> Distance from intersection, primitive ID, geometry ID: \n" << mirrorHits[0].t << ", " << mirrorHits[0].id << ", " << mirrorHits[0].gid << std::endl;
+            std::cout << "Intersection = origin + direction * t: \n" << vmFound.x() << ", " << vmFound.y() << ", " << vmFound.z() << std::endl;
+            toBeReturned.push_back(vmFound);
+        }
+    }
+}
 
 
 
