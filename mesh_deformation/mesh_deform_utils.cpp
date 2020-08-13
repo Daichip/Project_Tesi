@@ -244,7 +244,8 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXi& m
 
 
 void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& mirrorVerts, Eigen::MatrixXi& mirrorFaces,
-                                       std::vector<Eigen::Vector3d>& toBeReturned, Eigen::Vector3d rayOrig)
+                                  std::vector<Eigen::Vector3d>& intersections, std::vector<double>& distances,
+                                  std::vector<Eigen::Vector3d>& rayDirs, std::vector<Eigen::Vector3d>& projectedVerts, Eigen::Vector3d rayOrig)
 {
     for(int v = 0; v < meshVerts.rows(); v++)
     {
@@ -262,12 +263,25 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& m
         if(igl::ray_mesh_intersect(rayOrig, rayDir, mirrorVerts, mirrorFaces, mirrorHits))
         {
             Eigen::Vector3d vmFound = rayOrig + mirrorHits[0].t * rayDir;
-            std::cout << "\nHits[0] -> Distance from intersection, primitive ID, geometry ID: \n" << mirrorHits[0].t << ", " << mirrorHits[0].id << ", " << mirrorHits[0].gid << std::endl;
-            std::cout << "Intersection = origin + direction * t: \n" << vmFound.x() << ", " << vmFound.y() << ", " << vmFound.z() << std::endl;
-            toBeReturned.push_back(vmFound);
+            double dist = sqrt( pow((vert.x() - vmFound.x()), 2) + pow((vert.y() - vmFound.y()), 2) );
+            Eigen::Vector3d projVert = vmFound + dist * rayOrig;
+
+            intersections.push_back(vmFound);
+            rayDirs.push_back(rayDir);
+            distances.push_back(dist);
+            projectedVerts.push_back(projVert);
+
+//            std::cout << "\nHits[0] -> Distance from intersection, primitive ID, geometry ID: \n" << mirrorHits[0].t << ", " << mirrorHits[0].id << ", " << mirrorHits[0].gid << std::endl;
+//            std::cout << "Mesh Face n° " << mirrorHits[0].id << ":\n"
+//                      << mirrorVerts.row(mirrorFaces(mirrorHits[0].id, 0))
+//                      << "\n" << mirrorVerts.row(mirrorFaces(mirrorHits[0].id, 1))
+//                      << "\n" << mirrorVerts.row(mirrorFaces(mirrorHits[0].id, 2))
+//                      << std::endl;
+//            std::cout << "Intersection = origin + direction * t: \n" << vmFound.x() << ", " << vmFound.y() << ", " << vmFound.z() << std::endl;
         }
     }
 }
+// V.row(F(f,0))
 
 
 

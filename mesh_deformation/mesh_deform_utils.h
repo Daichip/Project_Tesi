@@ -18,7 +18,8 @@ void findIntersectionVertices(Eigen::MatrixXd& meshVerts, Eigen::MatrixXi& meshF
 void findIntersectionVertices(Eigen::MatrixXd& meshVerts, Eigen::MatrixXi& meshFaces, std::vector<Eigen::Vector3d>& toBeReturned, Eigen::Vector3d rayOrig, Eigen::Vector3d rayDest);
 
 void findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& mirrorVerts, Eigen::MatrixXi& mirrorFaces,
-                             std::vector<Eigen::Vector3d>& toBeReturned, Eigen::Vector3d rayOrig);
+                             std::vector<Eigen::Vector3d>& intersections, std::vector<double>& distances,
+                             std::vector<Eigen::Vector3d>& rayDirs, std::vector<Eigen::Vector3d>& projectedVerts, Eigen::Vector3d rayOrig);
 
 void findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXi& meshFaces,
                              Eigen::MatrixXd& mirrorVerts, Eigen::MatrixXi& mirrorFaces,

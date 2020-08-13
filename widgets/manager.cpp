@@ -369,12 +369,12 @@ void Manager::executeRender(bool renderFlag)
 
 
     std::string cmd_render = "\"" + std::string(TOSTRING(MITSUBA_PATH)) + "\" \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.xml\"";
-//    executeCommand(cmd_render);
+    executeCommand(cmd_render);
 
 
     // Convert .EXR to .PNG
     std::string cmd_convert = "convert \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.exr\" -colorspace RGB -colorspace sRGB \"" + std::string(TOSTRING(RESULTS_FOLDER)) + "/Scene.png\"";
-//    executeCommand(cmd_convert);
+    executeCommand(cmd_convert);
 
 
     // Set image in window
@@ -433,13 +433,18 @@ void Manager::executeRender(bool renderFlag)
                 Eigen::MatrixXd meshV;
                 Eigen::MatrixXi meshF;
                 Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(meshIndices[i]))->mesh());
+
                 nvl::convertMeshToEigenMesh(mirrorMesh, meshV, meshF);
+                std::cout << "MeshV - Rows: " << meshV.rows() << "\tMeshV - Columns: " << meshV.cols() << std::endl;
 
                 std::cout << "Inside the For, did the conversion" << std::endl;
 
                 std::vector<igl::Hit> hits;
                 std::vector<Eigen::Vector3d> visibleVertices;
                 std::vector<Eigen::Vector3d> rayMirrorIntersections;
+                std::vector<Eigen::Vector3d> rayDirs;
+                std::vector<Eigen::Vector3d> projectedVerts;
+                std::vector<double> vertexMirrorDistances;
 
                 std::cout << "Calling MDF" << std::endl;
 
@@ -454,11 +459,56 @@ void Manager::executeRender(bool renderFlag)
 
 
 
-                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF, rayMirrorIntersections, vCanvas->cameraPosition());
-                std::cout << "Mirror Intesections: " << rayMirrorIntersections.size() << std::endl;
+                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF,
+                                             rayMirrorIntersections, vertexMirrorDistances, rayDirs,
+                                             projectedVerts, vCanvas->cameraPosition());
 
-                for(auto rm : rayMirrorIntersections)
-                    std::cout << rm << std::endl;
+//                std::cout << "\n\nMirror Vertices:\n" << mirrorV << std::endl;
+
+//                std::cout << "\n\nNumber of Mirror Intesections: " << rayMirrorIntersections.size() << std::endl;
+//                for(auto rm : rayMirrorIntersections)
+//                    std::cout << rm << std::endl;
+
+//                std::cout << "\n\nNumber of directions: " << rayDirs.size() << std::endl;
+//                for(auto rm : rayDirs)
+//                    std::cout << rm << std::endl;
+
+//                std::cout << "\n\nNumber of distances: " << vertexMirrorDistances.size() << std::endl;
+//                for(auto rm : vertexMirrorDistances)
+//                    std::cout << rm << std::endl;
+
+
+//                std::cout << "\n\nNumber of projections: " << projectedVerts.size() << std::endl;
+//                for(auto rm : projectedVerts)
+//                {
+//                    // Round back to int later
+//                    float dx = rm.transpose().x();
+//                    float dy = rm.transpose().y();
+//                    float dz = rm.transpose().z();
+
+
+//                    std::cout << "vn " << std::setprecision(5) << dx << " " << dy << " " << dz << std::endl;
+//                    std::cout << "v " << std::setprecision(5) << dx << " " << dy << " " << dz << std::endl;
+//                }
+
+
+
+//                std::cout << "\n\n****************************************++" << std::endl;
+
+//                for(int i = 0; i < projectedVerts.size(); i = i=i+3)
+//                    std::cout << projectedVerts[i]
+//////                                 << ", " << projectedVerts[i+1] << ", " << projectedVerts[i+2]  << "\n"
+//                              << std::endl;
+
+
+                // Create deformed Mesh
+//                Eigen::Matrix3d defVertices(projectedVerts.size(), 3);
+//                for(int i =  0; i < projectedVerts.size(); i++)
+//                    defVertices.row(i) = Eigen::Vector3d::Map(&projectedVerts[i][0], 3);
+//                Eigen::Matrix3i defFaces(meshF.data());
+//                Mesh defMesh;
+//                nvl::convertEigenMeshToMesh(meshV, meshF, defMesh);
+//                nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
             }
         }
         std::cout << "\n\nEnd" << std::endl;
@@ -492,37 +542,6 @@ void Manager::executeRender(bool renderFlag)
 
 
 
-//    // Compute the ray-mesh intersections.
-//    // The rays should
-//    Eigen::Vector3d rayOrig(0, 0, 100);
-//    Eigen::Vector3d rayDir = vCanvas->cameraViewDirection();
-//    std::cout << "View Dir" << rayDir << std::endl;
-
-//    if(vCanvas->drawables().size() > 0)
-//    {
-//        Drawable* drawable = vCanvas->drawable(0);
-//        MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
-
-//        if (meshDrawer != nullptr) {
-//            Mesh meshCopy = *meshDrawer->mesh();
-
-//            std::vector<igl::Hit> hits;
-//            Eigen::MatrixXd V;
-//            Eigen::MatrixXi F;
-
-//            nvl::convertMeshToEigenMesh(meshCopy, V, F);
-//            igl::ray_mesh_intersect(rayOrig, rayDir, V, F, hits);
-
-////            std::cout << "VERTICES MATRIX:\n" << V << std::endl;
-////            std::cout << "FACES MATRIX:\n" << F << std::endl;
-
-//            std::cout << "Hits: " << hits.size() << std::endl;
-//            std::cout << "Hits[0] -> Distance from intersection, Barycentric Coordinates: " << hits[0].t << ", " << hits[0].u << ", " << hits[0].v << std::endl;
-
-//            std::vector<Eigen::Vector3d> visibleVerts;
-//            mdf::findVisibileVerts(V, F, visibleVerts, vCanvas->cameraPosition());
-//        }
-//    }
 
 }
 
