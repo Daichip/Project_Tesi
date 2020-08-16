@@ -247,6 +247,11 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& m
                                   std::vector<Eigen::Vector3d>& intersections, std::vector<double>& distances,
                                   std::vector<Eigen::Vector3d>& rayDirs, std::vector<Eigen::Vector3d>& projectedVerts, Eigen::Vector3d rayOrig)
 {
+
+//    std::cout << "++++++++++++++++++++++++\nMirror Vertices:\n" << mirrorVerts << std::endl;
+//    std::cout << "++++++++++++++++++++++++\nMirror Faces:\n" << mirrorFaces << std::endl;
+
+
     for(int v = 0; v < meshVerts.rows(); v++)
     {
         Eigen::Vector3d vert = meshVerts.row(v).template cast<double>();
@@ -264,10 +269,34 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& m
         {
             Eigen::Vector3d vmFound = rayOrig + mirrorHits[0].t * rayDir;
             double dist = sqrt( pow((vert.x() - vmFound.x()), 2) + pow((vert.y() - vmFound.y()), 2) );
-            Eigen::Vector3d projVert = vmFound + dist * rayOrig;
+            std::cout << "\nVert: " << vert.transpose() << "\tMirror Hit: " << vmFound.transpose() << "\tDist: " << dist << std::endl;
+
+            // TODO: get mirror face normal -> std::vector<Point3d> -> face id from Hit -> mirrorV(F(fid, 0-1-2))
+            int faceIndex = mirrorHits[0].id;
+            int faceVertexindex1 = mirrorFaces(faceIndex, 0);
+            int faceVertexindex2 = mirrorFaces(faceIndex, 1);
+            int faceVertexindex3 = mirrorFaces(faceIndex, 2);
+            nvl::Point3d faceVertex1 = mirrorVerts.row(faceVertexindex1);
+            nvl::Point3d faceVertex2 = mirrorVerts.row(faceVertexindex2);
+            nvl::Point3d faceVertex3 = mirrorVerts.row(faceVertexindex3);
+
+
+            std::vector<nvl::Point3d> faceVertices;
+            faceVertices.push_back(faceVertex1);
+            faceVertices.push_back(faceVertex2);
+            faceVertices.push_back(faceVertex3);
+
+            Eigen::Vector3d mirrorReflDir = nvl::getFaceNormalPlanar(faceVertices, true);
+//            std::cout << "\n\n++Test\nFace Index: " << faceIndex << "\n" << "Face Vertices Indices: " << faceVertexindex1 << ", " << faceVertexindex2 << ", " << faceVertexindex3 << "\n" << "Face Vertices:\n" << faceVertex1 << ",\n" << faceVertex2 << ",\n" << faceVertex3 << "\nMirror Refl Dir:\n" << mirrorReflDir << std::endl;
+
+
+
+            Eigen::Vector3d projVert = vmFound + dist * mirrorReflDir;
+            std::cout << "Ray Dir: " << rayDir.transpose() << "\tReflected Dir: " << mirrorReflDir.transpose() << std::endl;
+
 
             intersections.push_back(vmFound);
-            rayDirs.push_back(rayDir);
+            rayDirs.push_back(mirrorReflDir);
             distances.push_back(dist);
             projectedVerts.push_back(projVert);
 

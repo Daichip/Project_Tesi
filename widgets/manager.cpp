@@ -428,14 +428,19 @@ void Manager::executeRender(bool renderFlag)
             nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
 
             // Do the same for all the other meshes
-            for(int i = 0; i < meshIndices.size(); i++)
+//            for(int i = 0; i < meshIndices.size(); i++)
+            for(int i = 0; i < 1; i++)
             {
                 Eigen::MatrixXd meshV;
                 Eigen::MatrixXi meshF;
                 Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(meshIndices[i]))->mesh());
 
                 nvl::convertMeshToEigenMesh(mirrorMesh, meshV, meshF);
-                std::cout << "MeshV - Rows: " << meshV.rows() << "\tMeshV - Columns: " << meshV.cols() << std::endl;
+//                std::cout << "MeshV - Rows: " << meshV.rows() << "\tMeshV - Columns: " << meshV.cols() << std::endl;
+//                std::cout << "MeshF - Rows: " << meshF.rows() << "\tMeshF - Columns: " << meshF.cols() << std::endl;
+
+//                std::cout << "\n\n\n************************************************\nMeshV:\n" << meshV << std::endl;
+//                std::cout << "\n\n\n************************************************\nMeshF:\n" << meshF << std::endl;
 
                 std::cout << "Inside the For, did the conversion" << std::endl;
 
@@ -478,37 +483,51 @@ void Manager::executeRender(bool renderFlag)
 //                    std::cout << rm << std::endl;
 
 
-//                std::cout << "\n\nNumber of projections: " << projectedVerts.size() << std::endl;
-//                for(auto rm : projectedVerts)
-//                {
-//                    // Round back to int later
-//                    float dx = rm.transpose().x();
-//                    float dy = rm.transpose().y();
-//                    float dz = rm.transpose().z();
+                std::cout << "\n\nNumber of projections: " << projectedVerts.size() << std::endl;
+                for(auto rm : projectedVerts)
+                {
+                    // Round back to int later
+                    float dx = rm.x();
+                    float dy = rm.y();
+                    float dz = rm.z();
 
 
 //                    std::cout << "vn " << std::setprecision(5) << dx << " " << dy << " " << dz << std::endl;
 //                    std::cout << "v " << std::setprecision(5) << dx << " " << dy << " " << dz << std::endl;
-//                }
+                }
 
 
 
-//                std::cout << "\n\n****************************************++" << std::endl;
 
 //                for(int i = 0; i < projectedVerts.size(); i = i=i+3)
 //                    std::cout << projectedVerts[i]
-//////                                 << ", " << projectedVerts[i+1] << ", " << projectedVerts[i+2]  << "\n"
+////                                 << ", " << projectedVerts[i+1] << ", " << projectedVerts[i+2]  << "\n"
 //                              << std::endl;
 
 
                 // Create deformed Mesh
-//                Eigen::Matrix3d defVertices(projectedVerts.size(), 3);
-//                for(int i =  0; i < projectedVerts.size(); i++)
-//                    defVertices.row(i) = Eigen::Vector3d::Map(&projectedVerts[i][0], 3);
+                Eigen::MatrixXd defVertices(projectedVerts.size(), 3);
+//                std::cout << "\n\n****************************************++\n" << std::endl;
+//                int k = 0;
+//                for(auto rm : projectedVerts)
+                for(int k = 0; k < projectedVerts.size(); k++)
+                {
+//                    defVertices.row(i) << rm.x(), rm.y(), rm.z();
+//                    defVertices.row(k) = rm.transpose();
+                    defVertices.row(k) = projectedVerts[k].transpose();
+//                    std::cout << "\ndefVertices.row(i): = " << rm.transpose() << "\ndefVertices.row(i): " << defVertices.row(k) << std::endl;
+//                    k++;
+                }
+
+//                std::cout << "\n*****************************************+\ndefVertices:\n" << defVertices << std::endl;
+
 //                Eigen::Matrix3i defFaces(meshF.data());
-//                Mesh defMesh;
-//                nvl::convertEigenMeshToMesh(meshV, meshF, defMesh);
-//                nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
+                Mesh defMesh;
+                nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
+
+                nvl::meshUpdateVertexNormals(defMesh, false);
+
+                nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
             }
         }
         std::cout << "\n\nEnd" << std::endl;

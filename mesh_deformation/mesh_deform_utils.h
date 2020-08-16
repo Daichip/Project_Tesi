@@ -9,6 +9,9 @@
 #include <igl/ray_mesh_intersect.h>
 #include <igl/barycentric_coordinates.h>
 
+#include <nvl/math/point.h>
+#include <nvl/math/normals.h>
+
 
 
 namespace mdf{
