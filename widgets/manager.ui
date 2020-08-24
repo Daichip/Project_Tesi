@@ -55,6 +55,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="computeDeformationButton">
+     <property name="text">
+      <string>Compute Deformation</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="previewButton">
      <property name="text">
       <string>Preview</string>

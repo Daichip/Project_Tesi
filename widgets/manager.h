@@ -80,6 +80,8 @@ private slots:
 
     void on_previewButton_clicked();
 
+    void on_computeDeformationButton_clicked();
+
 private:
 
     MeshDrawer* getSelectedMeshDrawer();
@@ -94,6 +96,7 @@ private:
     int findDrawableIndex();
     void setupAndGenerateScene(ms::XMLScene& scene, nvl::Canvas* vCanvas, bool renderFlag);
     void executeCommand(std::string command);
+    void setupRender();
     void executeRender(bool renderFlag);
 
     //Interface fields

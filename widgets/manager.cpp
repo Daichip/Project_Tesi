@@ -192,6 +192,7 @@ void Manager::on_saveSceneButton_clicked()
     // The "true" boolean is used in the setupAndGenererateScene
     // to define if we need a full render (film size = canvas size) or just a preview (480x270)
     // In this case the user pressed the "Render" button, therefore it is a full render
+    setupRender();
     executeRender(true);
 }
 
@@ -200,6 +201,7 @@ void Manager::on_previewButton_clicked()
     // The "true" boolean is used in the setupAndGenererateScene
     // to define if we need a full render (film size = canvas size) or just a preview (480x270)
     // In this case the user pressed the "Preview" button, therefore it is a low-quality render
+    setupRender();
     executeRender(false);
 }
 
@@ -292,8 +294,6 @@ void Manager::addToMap(ms::Mats mat, int index)
     }
 }
 
-
-
 int Manager::findDrawableIndex()
 {
     int selectedIndex = -1;
@@ -324,8 +324,7 @@ void Manager::executeCommand(std::string command)
 }
 
 
-
-void Manager::executeRender(bool renderFlag)
+void Manager::setupRender()
 {
     try {
         std::system("mkdir Results");
@@ -344,12 +343,6 @@ void Manager::executeRender(bool renderFlag)
             nvl::meshUpdateVertexNormals(meshCopy);
             nvl::meshSaveToFile("Results/" + std::to_string(i) + ".obj", meshCopy);
 
-            //************************************************************************************************************************************************
-//            std::cout << "MeshDrawer Frame: \n" << meshDrawer->frame().matrix() << std::endl;
-
-//            std::cout << "Working with Mesh: " << meshDrawer->mesh() << "\n\n" << std::endl;
-            //************************************************************************************************************************************************
-
             // Automatically associates a material (Green Plastic) to a mesh if not set already
             auto findIT = matToMeshMap.find(i); // separated in order to avoid n checks
             if(findIT == matToMeshMap.end())
@@ -357,7 +350,13 @@ void Manager::executeRender(bool renderFlag)
         }
     }
 
+}
 
+
+void Manager::executeRender(bool renderFlag)
+{
+
+    setupRender();
 
 
     ms::XMLScene scene;
@@ -381,9 +380,13 @@ void Manager::executeRender(bool renderFlag)
     const QImage renderImage = QImage("Results/Scene.png").scaledToWidth(300);
     ui->imageLabelViewer->setPixmap(QPixmap::fromImage(renderImage));
     std::cout << "Image set" << std::endl;
+}
 
 
 
+
+void Manager::on_computeDeformationButton_clicked()
+{
     /**
         ray_mesh_intersect
         ray_mesh_intersect(source: array, dir: array, v: array, f: array) -> List[Tuple[int, int, float, float, float]]
@@ -400,9 +403,10 @@ void Manager::executeRender(bool renderFlag)
 
       **/
 
+    setupRender();
+
     if(vCanvas->drawables().size() > 0)
     {
-        std::cout << "IF SUCCESS" << std::endl;
         int mirrorIndex;
         std::vector<int> meshIndices;
         auto matMeshIt = matToMeshMap.begin();
@@ -416,8 +420,6 @@ void Manager::executeRender(bool renderFlag)
 
             matMeshIt++;
         }
-
-        std::cout << "While Completed\nMirror Index: " << mirrorIndex << "\nMeshIndices.size: " << meshIndices.size() << std::endl;
 
         if(mirrorIndex >= 0 && mirrorIndex < vCanvas->drawables().size())
         {
@@ -436,13 +438,6 @@ void Manager::executeRender(bool renderFlag)
                 Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(meshIndices[i]))->mesh());
 
                 nvl::convertMeshToEigenMesh(mirrorMesh, meshV, meshF);
-//                std::cout << "MeshV - Rows: " << meshV.rows() << "\tMeshV - Columns: " << meshV.cols() << std::endl;
-//                std::cout << "MeshF - Rows: " << meshF.rows() << "\tMeshF - Columns: " << meshF.cols() << std::endl;
-
-//                std::cout << "\n\n\n************************************************\nMeshV:\n" << meshV << std::endl;
-//                std::cout << "\n\n\n************************************************\nMeshF:\n" << meshF << std::endl;
-
-                std::cout << "Inside the For, did the conversion" << std::endl;
 
                 std::vector<igl::Hit> hits;
                 std::vector<Eigen::Vector3d> visibleVertices;
@@ -451,118 +446,26 @@ void Manager::executeRender(bool renderFlag)
                 std::vector<Eigen::Vector3d> projectedVerts;
                 std::vector<double> vertexMirrorDistances;
 
-                std::cout << "Calling MDF" << std::endl;
-
-//                mdf::findIntersectionVertices(meshV, meshF, visibleVertices, vCanvas->cameraPosition());
-
-//                std::cout << "Mesh Intesections: " << visibleVertices.size() << std::endl;
-
-//                for(int j = 0; i < visibleVertices.size(); j++)
-//                {
-//                    mdf::findIntersectionVertices(mirrorV, mirrorF, rayMirrorIntersections, visibleVertices[j], vCanvas->cameraPosition());
-//                }
-
-
-
                 mdf::findMirrorIntersections(meshV, mirrorV, mirrorF,
                                              rayMirrorIntersections, vertexMirrorDistances, rayDirs,
                                              projectedVerts, vCanvas->cameraPosition());
 
-//                std::cout << "\n\nMirror Vertices:\n" << mirrorV << std::endl;
-
-//                std::cout << "\n\nNumber of Mirror Intesections: " << rayMirrorIntersections.size() << std::endl;
-//                for(auto rm : rayMirrorIntersections)
-//                    std::cout << rm << std::endl;
-
-//                std::cout << "\n\nNumber of directions: " << rayDirs.size() << std::endl;
-//                for(auto rm : rayDirs)
-//                    std::cout << rm << std::endl;
-
-//                std::cout << "\n\nNumber of distances: " << vertexMirrorDistances.size() << std::endl;
-//                for(auto rm : vertexMirrorDistances)
-//                    std::cout << rm << std::endl;
-
-
-                std::cout << "\n\nNumber of projections: " << projectedVerts.size() << std::endl;
-                for(auto rm : projectedVerts)
-                {
-                    // Round back to int later
-                    float dx = rm.x();
-                    float dy = rm.y();
-                    float dz = rm.z();
-
-
-//                    std::cout << "vn " << std::setprecision(5) << dx << " " << dy << " " << dz << std::endl;
-//                    std::cout << "v " << std::setprecision(5) << dx << " " << dy << " " << dz << std::endl;
-                }
-
-
-
-
-//                for(int i = 0; i < projectedVerts.size(); i = i=i+3)
-//                    std::cout << projectedVerts[i]
-////                                 << ", " << projectedVerts[i+1] << ", " << projectedVerts[i+2]  << "\n"
-//                              << std::endl;
-
-
                 // Create deformed Mesh
                 Eigen::MatrixXd defVertices(projectedVerts.size(), 3);
-//                std::cout << "\n\n****************************************++\n" << std::endl;
-//                int k = 0;
-//                for(auto rm : projectedVerts)
                 for(int k = 0; k < projectedVerts.size(); k++)
-                {
-//                    defVertices.row(i) << rm.x(), rm.y(), rm.z();
-//                    defVertices.row(k) = rm.transpose();
                     defVertices.row(k) = projectedVerts[k].transpose();
-//                    std::cout << "\ndefVertices.row(i): = " << rm.transpose() << "\ndefVertices.row(i): " << defVertices.row(k) << std::endl;
-//                    k++;
-                }
-
-//                std::cout << "\n*****************************************+\ndefVertices:\n" << defVertices << std::endl;
 
 //                Eigen::Matrix3i defFaces(meshF.data());
                 Mesh defMesh;
                 nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
 
-                nvl::meshUpdateVertexNormals(defMesh, false);
+//                nvl::meshUpdateVertexNormals(defMesh, false);
 
                 nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
             }
         }
-        std::cout << "\n\nEnd" << std::endl;
+        std::cout << "\n\nDeformation Saved" << std::endl;
+
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-
-
