@@ -19,8 +19,7 @@
 namespace mdf{
 
 void findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& mirrorVerts, Eigen::MatrixXi& mirrorFaces,
-                             std::vector<Eigen::Vector3d>& intersections, std::vector<double>& distances,
-                             std::vector<Eigen::Vector3d>& rayDirs, std::vector<Eigen::Vector3d>& projectedVerts, Eigen::Vector3d rayOrig);
+                             std::vector<Eigen::Vector3d>& projectedVerts, Eigen::Vector3d rayOrig);
 
 
 

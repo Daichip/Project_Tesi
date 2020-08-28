@@ -440,26 +440,22 @@ void Manager::on_computeDeformationButton_clicked()
                 nvl::convertMeshToEigenMesh(mirrorMesh, meshV, meshF);
 
                 std::vector<igl::Hit> hits;
-                std::vector<Eigen::Vector3d> visibleVertices;
-                std::vector<Eigen::Vector3d> rayMirrorIntersections;
-                std::vector<Eigen::Vector3d> rayDirs;
                 std::vector<Eigen::Vector3d> projectedVerts;
-                std::vector<double> vertexMirrorDistances;
 
-                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF,
-                                             rayMirrorIntersections, vertexMirrorDistances, rayDirs,
-                                             projectedVerts, vCanvas->cameraPosition());
+                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF, projectedVerts, vCanvas->cameraPosition());
 
                 // Create deformed Mesh
+                // Set vertices
                 Eigen::MatrixXd defVertices(projectedVerts.size(), 3);
                 for(int k = 0; k < projectedVerts.size(); k++)
                     defVertices.row(k) = projectedVerts[k].transpose();
 
-//                Eigen::Matrix3i defFaces(meshF.data());
-                Mesh defMesh;
-                nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
+                Mesh defMesh;              
 
-//                nvl::meshUpdateVertexNormals(defMesh, false);
+                for (int fId = 0; fId < meshF.rows(); fId++)
+                    std::swap(meshF(fId, 0), meshF(fId, 2));
+
+                nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
 
                 nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
             }
