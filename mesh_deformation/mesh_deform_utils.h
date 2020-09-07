@@ -11,6 +11,11 @@
 
 #include <nvl/math/point.h>
 #include <nvl/math/normals.h>
+#include <nvl/models/meshes.h>
+#include <nvl/models/mesh_eigen_convert.h>
+
+
+
 
 #include <QMessageBox>
 
@@ -18,8 +23,13 @@
 
 namespace mdf{
 
+typedef nvl::PolygonMesh3d Mesh;
+
 void findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& mirrorVerts, Eigen::MatrixXi& mirrorFaces,
                              std::vector<Eigen::Vector3d>& projectedVerts, Eigen::Vector3d rayOrig);
+
+
+void findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMesh, Eigen::Vector3d rayOrig);
 
 
 

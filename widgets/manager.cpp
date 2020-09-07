@@ -423,43 +423,89 @@ void Manager::on_computeDeformationButton_clicked()
 
         if(mirrorIndex >= 0 && mirrorIndex < vCanvas->drawables().size())
         {
-            // get mirror vertices and faces
-            Eigen::MatrixXd mirrorV;
-            Eigen::MatrixXi mirrorF;
-            Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(mirrorIndex))->mesh());
-            nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
+//            // get mirror vertices and faces
+//            Eigen::MatrixXd mirrorV;
+//            Eigen::MatrixXi mirrorF;
 
-            // Do the same for all the other meshes
-//            for(int i = 0; i < meshIndices.size(); i++)
-            for(int i = 0; i < 1; i++)
-            {
-                Eigen::MatrixXd meshV;
-                Eigen::MatrixXi meshF;
-                Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(meshIndices[i]))->mesh());
+//            Drawable* drawable = vCanvas->drawable(mirrorIndex);
+//            MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+//            Mesh mirrorMesh = *meshDrawer->mesh();
+//            nvl::meshApplyTransformation(mirrorMesh, meshDrawer->frame());
+//            nvl::meshUpdateVertexNormals(mirrorMesh);
 
-                nvl::convertMeshToEigenMesh(mirrorMesh, meshV, meshF);
+////            Mesh mirrorMesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(mirrorIndex))->mesh());
+//            nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
 
-                std::vector<igl::Hit> hits;
-                std::vector<Eigen::Vector3d> projectedVerts;
+//            // Do the same for all the other meshes
+////            for(int i = 0; i < meshIndices.size(); i++)
+//            for(int i = 0; i < 1; i++)
+//            {
+//                Eigen::MatrixXd meshV;
+//                Eigen::MatrixXi meshF;
 
-                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF, projectedVerts, vCanvas->cameraPosition());
+//                Drawable* drawable = vCanvas->drawable(i);
+//                MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+//                Mesh mesh = *meshDrawer->mesh();
+//                nvl::meshApplyTransformation(mesh, meshDrawer->frame());
+//                nvl::meshUpdateVertexNormals(mesh);
 
-                // Create deformed Mesh
-                // Set vertices
-                Eigen::MatrixXd defVertices(projectedVerts.size(), 3);
-                for(int k = 0; k < projectedVerts.size(); k++)
-                    defVertices.row(k) = projectedVerts[k].transpose();
+////                Mesh mesh = *(dynamic_cast<MeshDrawer*>(vCanvas->drawable(meshIndices[i]))->mesh());
 
-                Mesh defMesh;              
+//                nvl::convertMeshToEigenMesh(mesh, meshV, meshF);
 
-                for (int fId = 0; fId < meshF.rows(); fId++)
-                    std::swap(meshF(fId, 0), meshF(fId, 2));
+//                std::vector<igl::Hit> hits;
+//                std::vector<Eigen::Vector3d> projectedVerts;
+////                std::vector<int> reflectedFacesIndices;
 
-                nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
+////                mdf::findMirrorIntersections(meshV, mirrorV, mirrorF, projectedVerts, vCanvas->cameraPosition());
 
-                nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
-            }
-        }
+////                // Create deformed Mesh
+////                // Set vertices
+////                Eigen::MatrixXd defVertices(projectedVerts.size(), 3);
+////                for(int k = 0; k < projectedVerts.size(); k++)
+////                    defVertices.row(k) = projectedVerts[k].transpose();
+
+////                Mesh defMesh;
+
+//                // Convert list of faces to be flipped to set and back in order to remove duplicates
+////                std::set<int> s( reflectedFacesIndices.begin(), reflectedFacesIndices.end() );
+////                reflectedFacesIndices.assign( s.begin(), s.end() );
+////                for(int fId = 0; fId < reflectedFacesIndices.size(); fId++)
+////                    std::swap(meshF(fId, 0), meshF(fId, 2));
+
+//                for (int fId = 0; fId < meshF.rows(); fId++)
+//                    std::swap(meshF(fId, 0), meshF(fId, 2));
+
+//                nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
+//                nvl::meshUpdateVertexNormals(defMesh);
+//                nvl::meshUpdateFaceNormals(defMesh);
+//                nvl::meshUpdateVertexNormalsFromFaceNormals(defMesh, true);
+
+//                std::cout << "Face Normal 4: " << defMesh.faceNormal(3).transpose() << "\tVertex Normal 4: " << defMesh.vertexNormal(3).transpose() << std::endl;
+
+//                nvl::meshSaveToFile("Results/deformedMesh" + std::to_string(i) + ".obj", defMesh);
+//            }
+
+            Drawable* drawable = vCanvas->drawable(mirrorIndex);
+            MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+            Mesh mirrorMesh = *meshDrawer->mesh();
+            nvl::meshApplyTransformation(mirrorMesh, meshDrawer->frame());
+            nvl::meshUpdateVertexNormals(mirrorMesh);
+
+            drawable = vCanvas->drawable(meshIndices[0]);
+            meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+            Mesh inputMesh = *meshDrawer->mesh();
+            nvl::meshApplyTransformation(inputMesh, meshDrawer->frame());
+            nvl::meshUpdateVertexNormals(inputMesh);
+
+            Mesh defMesh;
+
+            mdf::findMirrorIntersections(inputMesh, mirrorMesh, defMesh, vCanvas->cameraPosition());
+
+            nvl::meshSaveToFile("Results/deformedMesh.obj", defMesh);
+        }// End IF
+
+
         std::cout << "\n\nDeformation Saved" << std::endl;
 
     }
