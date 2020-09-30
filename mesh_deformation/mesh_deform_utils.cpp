@@ -54,25 +54,26 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& m
 }
 
 
-
-
-
-
 void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMesh, Eigen::Vector3d rayOrig)
 {
 
-    Eigen::MatrixXd mirrorV;
-    Eigen::MatrixXi mirrorF;
-    nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
-
+    // Extract vertices and faces of the input mesh
     Eigen::MatrixXd meshV;
     Eigen::MatrixXi meshF;
     nvl::convertMeshToEigenMesh(inputMesh, meshV, meshF);
 
-    std::vector<igl::Hit> hits;
-    std::vector<Eigen::Vector3d> projectedVerts;
+    // Extract vertices and faces of the mirror mesh
+    Eigen::MatrixXd mirrorV;
+    Eigen::MatrixXi mirrorF;
+    nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
 
+    // Create the matrix containing the vertices of the deformation
+    Eigen::MatrixXd defVertices(meshV.rows(), 3);
 
+    // Test timer
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // For each vertex of the input model
     for(int v = 0; v < meshV.rows(); v++)
     {
         Eigen::Vector3d vert = meshV.row(v);
@@ -80,13 +81,17 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
         // Direction of the ray going from the camera to the vertex (same for the mirror)
         Eigen::Vector3d rayDir = (vert - rayOrig).normalized();
 
-        std::vector<igl::Hit> mirrorHits; // Contains, for each vertex of the mesh, the corresponding point on the Mirror
+        // Will contain the information associated to the intersection between the ray and
+        // the mirror'surface. We're interested in the face's ID and the barycentric coordinates
+        igl::Hit hit;
 
-        // If the ray hits something
-        // igl::ray_mesh_intersect(rayOrig, rayDir, V, F, hits);
-        if(igl::ray_mesh_intersect(rayOrig, rayDir, mirrorV, mirrorF, mirrorHits))
+//        auto pre_igl = std::chrono::high_resolution_clock::now();
+//        std::cout << "Pre igl: " << std::chrono::duration_cast<std::chrono::seconds>(pre_igl - start).count() << std::endl;
+
+        // Checks if the ray hits the surface on the mirror
+        if(igl::ray_mesh_intersect(rayOrig, rayDir, mirrorV, mirrorF, hit))
         {
-            Eigen::Vector3d vmFound = rayOrig + mirrorHits[0].t * rayDir;
+            Eigen::Vector3d vmFound = rayOrig + hit.t * rayDir;
             double dist = sqrt( pow( (vmFound.x() - vert.x()), 2) +
                                 pow( (vmFound.y() - vert.y()), 2) +
                                 pow( (vmFound.z() - vert.z()), 2) );
@@ -95,7 +100,7 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
             // Get the face id from the igl::Hit
             // Get the vertices of the face
             // Get the normal of said face
-            int faceIndex = mirrorHits[0].id;
+            int faceIndex = hit.id;
             int faceVertexindex1 = mirrorF(faceIndex, 0);
             int faceVertexindex2 = mirrorF(faceIndex, 1);
             int faceVertexindex3 = mirrorF(faceIndex, 2);
@@ -104,31 +109,40 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
             Eigen::Vector3d& v2Norm = mirrorMesh.vertexNormal(faceVertexindex2);
             Eigen::Vector3d& v3Norm = mirrorMesh.vertexNormal(faceVertexindex3);
 
-            Eigen::Vector3d mirrorReflDir = ( (1 - mirrorHits[0].u - mirrorHits[0].v) * v1Norm +
-                                               mirrorHits[0].u * v2Norm +
-                                               mirrorHits[0].v * v3Norm
+            // Interpolate with barycentric coordinates to obtain the direction of the reflection of the ray
+            Eigen::Vector3d mirrorReflDir = ( (1 - hit.u - hit.v) * v1Norm +
+                                               hit.u * v2Norm +
+                                               hit.v * v3Norm
                                             ).normalized();
 
             Eigen::Vector3d projVert = vmFound + dist * mirrorReflDir;
 
-            projectedVerts.push_back(projVert);
 
-            mirrorHits.clear();
+            defVertices.row(v) = projVert.transpose();
         }
+
+//        auto post_igl = std::chrono::high_resolution_clock::now();
+//        std::cout << "Post igl: " << std::chrono::duration_cast<std::chrono::seconds>(post_igl - pre_igl).count() << " seconds\nTot: " << std::chrono::duration_cast<std::chrono::seconds>(post_igl - start).count() << " seconds" << std::endl;
+
     }
 
-    Eigen::MatrixXd defVertices(projectedVerts.size(), 3);
-    for(int k = 0; k < projectedVerts.size(); k++)
-        defVertices.row(k) = projectedVerts[k].transpose();
+//    auto post_vert = std::chrono::high_resolution_clock::now();
+//    std::cout << "Post Vertici: " << std::chrono::duration_cast<std::chrono::seconds>(post_vert - start).count() << " seconds" << std::endl;
 
     for (int fId = 0; fId < meshF.rows(); fId++)
         std::swap(meshF(fId, 0), meshF(fId, 2));
 
+//    auto swap_facce = std::chrono::high_resolution_clock::now();
+//    std::cout << "Swap facce: " << std::chrono::duration_cast<std::chrono::seconds>(swap_facce - post_vert).count() << " seconds\nTot: " << std::chrono::duration_cast<std::chrono::seconds>(swap_facce - start).count() << " seconds" << std::endl;
+
     nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
+
+//    auto mesh_convert = std::chrono::high_resolution_clock::now();
+//    std::cout << "Mesh Convertita: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - swap_facce).count() << " seconds\nTot: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - start).count() << " seconds" << std::endl;
+
+    auto mesh_convert = std::chrono::high_resolution_clock::now();
+    std::cout << "Tot: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - start).count() << " seconds" << std::endl;
 }
-
-
-
 
 
 

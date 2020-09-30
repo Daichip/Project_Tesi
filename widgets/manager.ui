@@ -78,7 +78,7 @@
    <item>
     <widget class="QLabel" name="imageLabelViewer">
      <property name="text">
-      <string>Render Goes Here</string>
+      <string/>
      </property>
     </widget>
    </item>
