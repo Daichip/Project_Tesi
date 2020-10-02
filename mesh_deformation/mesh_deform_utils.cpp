@@ -56,7 +56,6 @@ void mdf::findMirrorIntersections(Eigen::MatrixXd& meshVerts, Eigen::MatrixXd& m
 
 void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMesh, Eigen::Vector3d rayOrig)
 {
-
     // Extract vertices and faces of the input mesh
     Eigen::MatrixXd meshV;
     Eigen::MatrixXi meshF;
@@ -73,6 +72,9 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
     // Test timer
     auto start = std::chrono::high_resolution_clock::now();
 
+    igl::AABB<Eigen::MatrixXd, 3> tree;
+    tree.init(mirrorV, mirrorF);
+
     // For each vertex of the input model
     for(int v = 0; v < meshV.rows(); v++)
     {
@@ -88,18 +90,24 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
 //        auto pre_igl = std::chrono::high_resolution_clock::now();
 //        std::cout << "Pre igl: " << std::chrono::duration_cast<std::chrono::seconds>(pre_igl - start).count() << std::endl;
 
+        bool found = tree.intersect_ray(mirrorV, mirrorF, rayOrig, rayDir, hit);
+
         // Checks if the ray hits the surface on the mirror
-        if(igl::ray_mesh_intersect(rayOrig, rayDir, mirrorV, mirrorF, hit))
+        if(found)
         {
+            // Compute the coordinates of the intersection
             Eigen::Vector3d vmFound = rayOrig + hit.t * rayDir;
+
+            // Compute the distance between the vertex on the input model
+            // and the intersection
             double dist = sqrt( pow( (vmFound.x() - vert.x()), 2) +
                                 pow( (vmFound.y() - vert.y()), 2) +
                                 pow( (vmFound.z() - vert.z()), 2) );
 
             // Get normals
-            // Get the face id from the igl::Hit
+            // Get the face id from the igl::Hit object
             // Get the vertices of the face
-            // Get the normal of said face
+            // Get the vertex normals of the face
             int faceIndex = hit.id;
             int faceVertexindex1 = mirrorF(faceIndex, 0);
             int faceVertexindex2 = mirrorF(faceIndex, 1);
@@ -109,15 +117,16 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
             Eigen::Vector3d& v2Norm = mirrorMesh.vertexNormal(faceVertexindex2);
             Eigen::Vector3d& v3Norm = mirrorMesh.vertexNormal(faceVertexindex3);
 
-            // Interpolate with barycentric coordinates to obtain the direction of the reflection of the ray
+            // Interpolate with the barycentric coordinates to obtain the direction of the reflection of the ray
             Eigen::Vector3d mirrorReflDir = ( (1 - hit.u - hit.v) * v1Norm +
                                                hit.u * v2Norm +
                                                hit.v * v3Norm
                                             ).normalized();
 
+            // Compute the coordinates of the "reflected" vertex
             Eigen::Vector3d projVert = vmFound + dist * mirrorReflDir;
 
-
+            // Add the new vertex to the deformation
             defVertices.row(v) = projVert.transpose();
         }
 
@@ -129,19 +138,20 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
 //    auto post_vert = std::chrono::high_resolution_clock::now();
 //    std::cout << "Post Vertici: " << std::chrono::duration_cast<std::chrono::seconds>(post_vert - start).count() << " seconds" << std::endl;
 
+    // Invert the order of the vertices of the face to
+    // properly represent the reflection phenonmenon
     for (int fId = 0; fId < meshF.rows(); fId++)
         std::swap(meshF(fId, 0), meshF(fId, 2));
 
 //    auto swap_facce = std::chrono::high_resolution_clock::now();
 //    std::cout << "Swap facce: " << std::chrono::duration_cast<std::chrono::seconds>(swap_facce - post_vert).count() << " seconds\nTot: " << std::chrono::duration_cast<std::chrono::seconds>(swap_facce - start).count() << " seconds" << std::endl;
 
+    // Create a Mesh object
     nvl::convertEigenMeshToMesh(defVertices, meshF, defMesh);
-
-//    auto mesh_convert = std::chrono::high_resolution_clock::now();
-//    std::cout << "Mesh Convertita: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - swap_facce).count() << " seconds\nTot: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - start).count() << " seconds" << std::endl;
 
     auto mesh_convert = std::chrono::high_resolution_clock::now();
     std::cout << "Tot: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - start).count() << " seconds" << std::endl;
+//    std::cout << "Mesh Convertita: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - swap_facce).count() << " seconds\nTot: " << std::chrono::duration_cast<std::chrono::seconds>(mesh_convert - start).count() << " seconds" << std::endl;
 }
 
 
