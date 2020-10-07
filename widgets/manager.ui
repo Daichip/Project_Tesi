@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>336</width>
-    <height>413</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,6 +48,36 @@
        <widget class="QRadioButton" name="materialPlasticGreenRadio">
         <property name="text">
          <string>Plastic (green)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="positionGroupBox">
+     <property name="title">
+      <string>Model Position</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="scaleFactorLabel">
+        <property name="text">
+         <string>Mirror BB Scale Factor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="positionResetPushButton">
+        <property name="text">
+         <string>Reset Position and Scale</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="mirrorScaleFactorLineEdit">
+        <property name="text">
+         <string>1</string>
         </property>
        </widget>
       </item>

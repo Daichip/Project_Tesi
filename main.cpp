@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
     Manager manager(&canvas, &drawableListWidget, &modelLoaderWidget);
     viewer.addToLeftDock(&manager);
 
+
     canvas.fitScene();
 
     viewer.showMaximized();

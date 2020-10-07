@@ -82,6 +82,8 @@ private slots:
 
     void on_computeDeformationButton_clicked();
 
+    void on_positionResetPushButton_clicked();
+
 private:
 
     MeshDrawer* getSelectedMeshDrawer();
