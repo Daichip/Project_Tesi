@@ -157,6 +157,3 @@ void mdf::findMirrorIntersections(Mesh& inputMesh, Mesh& mirrorMesh, Mesh& defMe
 
 
 
-
-
-

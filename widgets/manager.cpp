@@ -404,10 +404,11 @@ void Manager::on_computeDeformationButton_clicked()
 
     setupRender();
 
+    int mirrorIndex = -1;
+    std::vector<int> meshIndices;
+
     if(vCanvas->drawables().size() > 0)
     {
-        int mirrorIndex;
-        std::vector<int> meshIndices;
         auto matMeshIt = matToMeshMap.begin();
 
         while(matMeshIt != matToMeshMap.end())
@@ -460,10 +461,11 @@ void Manager::on_positionResetPushButton_clicked()
     // in order for it to fit inside the mirror
     // Both models are then translated to the center of the scene.
 
+    int mirrorIndex = -1;
+    std::vector<int> meshIndices;
+
     if(vCanvas->drawables().size() > 0)
     {
-        int mirrorIndex;
-        std::vector<int> meshIndices;
         auto matMeshIt = matToMeshMap.begin();
 
         while(matMeshIt != matToMeshMap.end())
@@ -478,104 +480,7 @@ void Manager::on_positionResetPushButton_clicked()
 
         if(mirrorIndex >= 0 && mirrorIndex < vCanvas->drawables().size())
         {
-
-            // If there is a mirror in the scene
-            // Scale it and translate it
-
-            float mirrorScaleFactor = ui->mirrorScaleFactorLineEdit->text().toFloat();
-            double maxX, maxY, maxZ, minX, minY, minZ;
-
-            // To scale the BB properly: scaleFactor/maxCoord
-            // So if they are (0.4, 0.9, 0.2) it will be (1/0.9, 1/ 0.9, 1/0.9)
-
-            // F1: Vertici e facce
-            // F2: Dati i vertici trova il massimo in ogni coordinata
-            // F3: Dato il centro del BB, trova il fattore di traslazione per il centro degli assi
-
-
-
-            Drawable* drawable = vCanvas->drawable(mirrorIndex);
-            MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
-            Mesh mirrorMesh = *meshDrawer->mesh();
-
-            // Extract vertices and faces of the mirror mesh
-            Eigen::MatrixXd mirrorV;
-            Eigen::MatrixXi mirrorF;
-            nvl::convertMeshToEigenMesh(mirrorMesh, mirrorV, mirrorF);
-
-
-            minX = maxX = mirrorV.row(0).x();
-            minY = maxY = mirrorV.row(0).y();
-            minZ = maxZ = mirrorV.row(0).z();
-
-
-            for(int v = 0; v < mirrorV.rows(); v++)
-            {
-                Eigen::Vector3d vert = mirrorV.row(v);
-
-                // X Coord
-                if(vert.x() < minX)
-                    minX = vert.x();
-
-                if(vert.x() > maxX)
-                    maxX = vert.x();
-
-                // Y Coord
-                if(vert.y() < minY)
-                    minY = vert.y();
-
-                if(vert.y() > maxY)
-                    maxY = vert.y();
-
-                // Z Coord
-                if(vert.z() < minZ)
-                    minZ = vert.z();
-
-                if(vert.z() > maxZ)
-                    maxZ = vert.z();
-            }
-
-            double maxCoord = std::max(maxX, std::max(maxY, maxZ));
-
-//            Eigen::Vector3d scaleFactor(mirrorScaleFactor / maxCoord, mirrorScaleFactor / maxCoord, mirrorScaleFactor / maxCoord);
-
-            Eigen::Vector3d center = meshDrawer->boundingBox().center();
-
-//            Eigen::Scaling(mirrorScaleFactor/maxCoord);
-//            Eigen::Translation<double, 3>(center.x(), center.y(), center.z());
-
-            nvl::meshApplyTransformation(mirrorMesh, Eigen::Scaling(mirrorScaleFactor/maxCoord));
-            nvl::meshApplyTransformation(mirrorMesh,  Eigen::Translation<double, 3>(-center.x(), -center.y(), -center.z()));
-
-            meshDrawer->setMesh(&mirrorMesh);
-
-
-
-
-            // -----------------------------------------------------------
-
-//            drawable = vCanvas->drawable(meshIndices[0]);
-//            meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
-//            Mesh inputMesh = *meshDrawer->mesh();
-//            nvl::meshApplyTransformation(inputMesh, meshDrawer->frame());
-//            nvl::meshUpdateVertexNormals(inputMesh);
-
-//            // Extract vertices and faces of the input mesh
-//            Eigen::MatrixXd meshV;
-//            Eigen::MatrixXi meshF;
-//            nvl::convertMeshToEigenMesh(inputMesh, meshV, meshF);
-
-
-
-
-
-
-
-
-
-
-
-
+            scaleAndTranslate(mirrorIndex);
 
         } // End IF [mirrorIndex >= 0 && mirrorIndex < vCanvas->drawables().size()]
     } // End IF [vCanvas->drawables().size() > 0]
@@ -585,4 +490,81 @@ void Manager::on_positionResetPushButton_clicked()
     updateView();
 
 
+}
+
+
+
+void Manager::scaleAndTranslate(int drawerIndex)
+{
+    // If there is a mirror in the scene
+    // Scale it and translate it
+
+    float mirrorScaleFactor = ui->mirrorScaleFactorLineEdit->text().toFloat();
+
+    // To scale the BB properly: scaleFactor/maxCoord
+    // So if they are (0.4, 0.9, 0.2) it will be (1/0.9, 1/ 0.9, 1/0.9)
+
+    // F1: Vertici e facce
+    // F2: Dati i vertici trova il massimo in ogni coordinata
+    // F3: Dato il centro del BB, trova il fattore di traslazione per il centro degli assi
+
+
+
+    Drawable* drawable = vCanvas->drawable(drawerIndex);
+    MeshDrawer* meshDrawer = dynamic_cast<MeshDrawer*>(drawable);
+    Mesh* mMesh = meshDrawer->mesh();
+
+    // Extract vertices and faces of the mirror mesh
+    Eigen::MatrixXd meshV;
+    Eigen::MatrixXi meshF;
+    nvl::convertMeshToEigenMesh(*mMesh, meshV, meshF);
+
+
+    double maxX, maxY, maxZ, minX, minY, minZ;
+    minX = maxX = meshV.row(0).x();
+    minY = maxY = meshV.row(0).y();
+    minZ = maxZ = meshV.row(0).z();
+
+
+    for(int v = 0; v < meshV.rows(); v++)
+    {
+        Eigen::Vector3d vert = meshV.row(v);
+
+        // X Coord
+        if(vert.x() < minX)
+            minX = vert.x();
+
+        if(vert.x() > maxX)
+            maxX = vert.x();
+
+        // Y Coord
+        if(vert.y() < minY)
+            minY = vert.y();
+
+        if(vert.y() > maxY)
+            maxY = vert.y();
+
+        // Z Coord
+        if(vert.z() < minZ)
+            minZ = vert.z();
+
+        if(vert.z() > maxZ)
+            maxZ = vert.z();
+    }
+
+    double maxCoord = std::max(maxX, std::max(maxY, maxZ));
+
+//    Eigen::Vector3d translV = meshDrawer->boundingBox().center();
+    Eigen::Vector3d translV = vCanvas->cameraSceneCenter();
+//    Eigen::Vector3d translV = vCanvas->cameraSceneCenter() - meshDrawer->boundingBox().center();
+
+    std::cout << "\nBB Center: " << meshDrawer->boundingBox().center().transpose() <<
+                 "\nCamera Center: " << vCanvas->cameraSceneCenter().transpose() <<
+                 "\nDiff: " << (vCanvas->cameraSceneCenter() - meshDrawer->boundingBox().center()).transpose() <<
+                 "\n\n" << std::endl;
+
+    nvl::meshApplyTransformation(*mMesh, Eigen::Scaling(mirrorScaleFactor/maxCoord));
+    nvl::meshApplyTransformation(*mMesh, Eigen::Translation<double, 3>(translV.x(), translV.y(), translV.z()));
+
+    meshDrawer->setMesh(mMesh);
 }

@@ -101,6 +101,10 @@ private:
     void setupRender();
     void executeRender(bool renderFlag);
 
+    // Drawer manipulation Methods
+    void scaleAndTranslate(int drawerIndex);
+
+
     //Interface fields
     Ui::Manager *ui;
 
